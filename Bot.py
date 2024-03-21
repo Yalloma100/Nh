@@ -248,7 +248,12 @@ def send_welcome(message):
 
 keep_alive()
 
-bot.polling()
+while True:
+    try:
+        bot.polling(none_stop=True)
+    except Exception as e:
+        print(f"Помилка: {e}")
+        time.sleep(1)
 
 
 
