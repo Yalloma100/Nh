@@ -6,6 +6,8 @@ from background import keep_alive
 from telebot import types
 
 
+
+
 BOT_TOKEN = "6754268225:AAFN5qOtXqjMemojBbY0pIHhzJWc1AH1fCI" # Замініть це своїм токеном бота
 bot = telebot.TeleBot(BOT_TOKEN)
 
@@ -22,6 +24,8 @@ quick_generations = {}
 @bot.message_handler(commands=['gen'])
 # Функція для обробки команди генерації зображення
 def generate_image(message):
+    user_id = message.from_user.id
+    user_d = message.chat.id
     # Створення двох кнопок
     button_1 = types.KeyboardButton("Повільна генерація")
     button_2 = types.KeyboardButton("Швидка генерація")
@@ -31,7 +35,20 @@ def generate_image(message):
     keyboard.add(button_1, button_2)
 
     # Відправлення повідомлення з двома кнопками
-    bot.send_message(message.chat.id, "Виберіть яку генерацію ви хочете використати👇", reply_markup=keyboard)
+    if user_id in all_users:
+      bot.send_message(message.chat.id, "Виберіть яку генерацію ви хочете використати👇", reply_markup=keyboard)
+    elif user_d not in all_users:
+        # Запис ID користувача в файл
+        with open("users.txt", "a") as f:
+            f.write(f"{user_id}\n")
+
+        # Додавання ID користувача до списку
+        all_users.append(user_id)
+        bot.send_message(message.chat.id, "Виберіть яку генерацію ви хочете використати👇", reply_markup=keyboard)
+    # Створення запису для нового користувача
+    if user_id not in generations:
+        generations[user_id] = 10
+        quick_generations[user_id] = 5
     
 
 
@@ -117,7 +134,7 @@ def bumon2 (message):
                   bot.send_message(message.chat.id, "Error")
 
 def help(message):
-  bot.send_message(message.chat.id, "Я RubiGen, я можу генерувати зображення по їх опису.\n\nКоманди:\n/gen - генерація зображення.\n/help - Допомога та команди.\n/balance - Перешлянути скільки залишилось генерацій на день.\n/promo - Ввести промокод.\n\nЧасті запитання:\nЧому RubiGen не розуміє що я хочу намалювати?\nВідповідь: Промт потрібно писати англійською та більше деталізувати зображення.\nЗа іншими питаннями звертайтесь до адміна: @RubiGenSupport.\nКанал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat.")
+  bot.send_message(message.chat.id, "Я RubiGen, я можу генерувати зображення по їх опису.\n\nКоманди:\n/buy - ❤купити Premium підписку на бота RubiGen❤\n/gen - генерація зображення.\n/help - Допомога та команди.\n/balance - Перешлянути скільки залишилось генерацій на день.\n/promo - Ввести промокод.\n\nЧасті запитання:\nЧому RubiGen не розуміє що я хочу намалювати?\nВідповідь: Промт потрібно писати англійською та більше деталізувати зображення.\nЗа іншими питаннями звертайтесь до адміна: @RubiGenSupport.\nКанал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat.")
 
 # Функція для обробки команди перевірки залишку генерацій
 def check_generations(message):
@@ -129,7 +146,7 @@ def check_generations(message):
         quick_generations[user_id] = 5
 
     # Повідомлення про залишок генерацій
-    bot.send_message(message.chat.id, f"У вас на день залишилося {quick_generations[user_id]} швидких генерацій та {generations[user_id]} повільних генерацій.")
+    bot.send_message(message.chat.id, f"У вас на балансі {quick_generations[user_id]} швидких генерацій та {generations[user_id]} повільних генерацій.")
 
 # Реєстрація команд
 bot.register_message_handler(check_generations, commands=['balance'])
@@ -170,6 +187,9 @@ activated_promocodes = {}
 
 @bot.message_handler(commands=["promo"])
 def promo_handler(message: types.Message):
+  global userbuyid
+  if userbuyid in usertelegids:
+    bot.send_message(message.chat.id, "Ви не можите активувати ніякі промокоди.")
     user_id = message.chat.id
     try:
     # Отримання тексту повідомлення
@@ -220,6 +240,39 @@ def send_messall(message):
 
 
 
+
+userbuyid = ""
+usertelegids = []
+
+@bot.message_handler(commands=['buy'])
+def add_buy_user(message):
+    global usertelegids
+    user_id = message.from_user.id
+    user_d = message.chat.id
+    if user_d == 6133407632:
+      bot.send_message(message.chat.id, "Введіть телеграм id нового premium користувача:")
+      bot.register_next_step_handler(message, next_add_buy)
+    else:
+      global usertelegids
+      global userbuyid
+      if userbuyid in usertelegids:
+        user_id = message.chat.id
+        global generations
+        global quick_generations
+        generations[user_id] = 400
+        quick_generations[user_id] = 200
+        usertelegids.remove(userbuyid)
+        bot.send_message(message.chat.id, f"Вам на баланс начислено {quick_generations[user_id]} швидких генерацій та {generations[user_id]} повільних генерацій.\n\nДякуємо що користуєтесь нашим телеграм ботом.")
+      else:
+        bot.send_message(message.chat.id, f"Premium підписка RubiGen Basic - Включає в себе 200 швидких генерацій, 400 повільних та велику нашу подяку.\n\nЩоб купити Premium підписку на нашого бота вам потрібно перевести 100грн на номер картки: 5375414122338071\nЗ ось таким описом: <b>Оплата за Premium Basic: {message.chat.id}</b>\n\nПісля переводу грошей вам потрібно очікувати до 24 годин, після вам прийде повідомлення про одобрення платежу.\n\nЯкщо ви через 24 години не отримали одобрення платежу тоді зверніться до адміна: @RubiGenSupport.", parse_mode="HTML")
+        
+def next_add_buy (message):
+  global usertelegids
+  global userbuyid
+  userbuyid = message.text
+  usertelegids.append(userbuyid)
+  bot.send_message(message.chat.id, "Користувача додано до списку.")
+  bot.send_message(userbuyid, "Вам підтвердили оплату premium підписки.\n\n!!!ВВЕДІТЬ КОМАНДУ /buy ЩОБ ОТРИМАТИ: 200 ШВИДКИХ ТА 400 ПОВІЛЬНИХ ГЕНЕРАЦІЙ!!!\n\nДякуємо що користуєтесь нашим телеграм ботом.")
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
