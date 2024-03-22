@@ -6,8 +6,6 @@ from background import keep_alive
 from telebot import types
 
 
-
-
 BOT_TOKEN = "6754268225:AAFN5qOtXqjMemojBbY0pIHhzJWc1AH1fCI" # Замініть це своїм токеном бота
 bot = telebot.TeleBot(BOT_TOKEN)
 
@@ -68,15 +66,16 @@ def bumon1 (message):
   prompt = message.text
 
   try:
-    time.sleep(240)
+    time.sleep(100)
     from gradio_client import Client
 
-    client = Client("ahmedemara10/Dremmar-nsfw-xl")
+    client = Client("ByteDance/SDXL-Lightning")
     result = client.predict(
-        prompt,	# str  in 'Input' Textbox component
-        api_name="/predict"
+        prompt,	# str  in 'Enter your prompt (English)' Textbox component
+        "8-Step",	# Literal['1-Step', '2-Step', '4-Step', '8-Step']  in 'Select inference steps' Dropdown component
+        api_name="/generate_image"
     )
-    url = "https://ahmedemara10-dremmar-nsfw-xl.hf.space/file="+ result
+    url = "https://bytedance-sdxl-lightning.hf.space/file=" + result
     time.sleep(5)
     bot.send_photo(message.chat.id, url)
     bot.send_message(message.chat.id, f'У вас залишилося {generations[user_id]} повільних генерацій.')
@@ -94,25 +93,26 @@ def bumon2 (message):
   if quick_generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
       return
-  bot.send_message(message.chat.id, "Почалась швидка генерація, зазвичай вона йде до 3 хвилин")
+  bot.send_message(message.chat.id, "Почалась швидка генерація, зазвичай вона йде до 2 хвилин")
   # Зменшення кількості генерацій
   quick_generations[user_id] -= 1
 
   # Генерація зображення
   prompt = message.text
   try:
-                  time.sleep(0)
-                  from gradio_client import Client
+    time.sleep(35)
+    from gradio_client import Client
 
-                  client = Client("ahmedemara10/Dremmar-nsfw-xl")
-                  result = client.predict(
-                      prompt + ", 4k, HD",	# str  in 'Input' Textbox component
-                      api_name="/predict"
-                  )
-                  url = "https://ahmedemara10-dremmar-nsfw-xl.hf.space/file="+ result
-                  time.sleep(5)
-                  bot.send_photo(message.chat.id, url)
-                  bot.send_message(message.chat.id, f'У вас залишилося {quick_generations[user_id]} швидких генерацій.')
+    client = Client("ByteDance/SDXL-Lightning")
+    result = client.predict(
+        prompt,	# str  in 'Enter your prompt (English)' Textbox component
+        "8-Step",	# Literal['1-Step', '2-Step', '4-Step', '8-Step']  in 'Select inference steps' Dropdown component
+        api_name="/generate_image"
+    )
+    url = "https://bytedance-sdxl-lightning.hf.space/file=" + result
+    time.sleep(5)
+    bot.send_photo(message.chat.id, url)
+    bot.send_message(message.chat.id, f'У вас залишилося {quick_generations[user_id]} швидких генерацій.')
   except:
                   bot.send_message(message.chat.id, "Error")
 
@@ -237,7 +237,7 @@ def send_welcome(message):
         
         # Додавання ID користувача до списку
         all_users.append(user_id)
-        bot.reply_to(message, "Привіт, я бот, який може безкоштовно генерувати зображення. У вас 5 швидкісних генерацій на день та 10 повільних. Введіть команду /help щоб почати генерацію зображень.")
+        bot.reply_to(message, "Привіт, я бот, який може безкоштовно генерувати зображення. У вас 5 швидкісних генерацій та 10 повільних. Введіть команду /help щоб почати.")
     # Створення запису для нового користувача
     if user_id not in generations:
         generations[user_id] = 10
@@ -249,11 +249,8 @@ def send_welcome(message):
 keep_alive()
 
 while True:
-    try:
-        bot.polling(none_stop=True)
-    except Exception as e:
-        print(f"Помилка: {e}")
-        time.sleep(1)
-
-
-
+  try:
+      bot.polling(none_stop=True)
+  except Exception as e:
+      print(f"Помилка: {e}")
+      time.sleep(1)
