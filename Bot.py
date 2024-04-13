@@ -5,9 +5,6 @@ import time
 from background import keep_alive
 from telebot import types
 
-
-
-
 BOT_TOKEN = "6754268225:AAFN5qOtXqjMemojBbY0pIHhzJWc1AH1fCI" # Замініть це своїм токеном бота
 bot = telebot.TeleBot(BOT_TOKEN)
 
@@ -49,7 +46,7 @@ def generate_image(message):
     if user_id not in generations:
         generations[user_id] = 10
         quick_generations[user_id] = 5
-    
+
 
 
 @bot.message_handler(commands=["promo"])
@@ -76,60 +73,77 @@ def promo_handr(message):
     bot.send_message(message.chat.id, "Промокод активовано!")
     generations[user_id] = 10
     quick_generations[user_id] = 5
-    
+
 
 
 
 # Функція для обробки натискань на кнопки
 @bot.message_handler(func=lambda message: message.text in ["Швидка генерація", "Повільна генерація"])
 def handle_buttons(message):
+    user_id = message.from_user.id
+    user_d = message.chat.id
+    if user_id in all_users:
       if message.text == "Швидка генерація":
           # Створення клавіатури для видалення
           keyboard_remove = types.ReplyKeyboardRemove()
           bot.send_message(message.chat.id, "Введіть промт для генерації👇", reply_markup=keyboard_remove)
           bot.register_next_step_handler(message, bumon2)
       elif message.text == "Повільна генерація":
+        # Створення клавіатури для видалення
         keyboard_remove = types.ReplyKeyboardRemove()
         bot.send_message(message.chat.id, "Введіть промт для генерації👇", reply_markup=keyboard_remove)
         bot.register_next_step_handler(message, bumon1)
+    elif user_d not in all_users:
+    # Запис ID користувача в файл
+      with open("users.txt", "a") as f:
+        f.write(f"{user_id}\n")
+    # Додавання ID користувача до списку
+      all_users.append(user_id)
+      handle_buttons(message)
+
 
 def bumon1 (message):
-  prompt = message.text
-  user_id = message.from_user.id
+   prompt = message.text
+   user_id = message.from_user.id
   # Перевірка залишку генерацій
-  if user_id not in generations:
+   if user_id not in generations:
       generations[user_id] = 10
-     
-  if generations[user_id] <= 0:
+
+   if generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
       return
-  bot.send_message(message.chat.id, "Почалась повільна генерація, зазвичай вона йде до 5 хвилин")
+   bot.send_message(message.chat.id, "💤Почалась повільна генерація, зазвичай вона триває до 5 хвилин")
+   user_id = message.chat.id
+   from easygoogletranslate import EasyGoogleTranslate
+   translator = EasyGoogleTranslate()
+   resut = translator.translate(prompt, target_language='en')
+   prompt = resut
+   try:
+     time.sleep(100)
+     from gradio_client import Client
+
+     client = Client("AP123/Playground-v2.5")
+     result = client.predict(
+         prompt,	# str  in 'Enter your image prompt' Textbox component
+         50,	# float (numeric value between 1 and 75) in 'Number of Inference Steps' Slider component
+         5,	# float (numeric value between 1 and 10) in 'Guidance Scale' Slider component
+         api_name="/generate_image"
+     )
+     url = "https://ap123-playground-v2-5.hf.space/file=" + result
+     # Видаліть останнє повідомлення, яке ваш бот відправив у чат користувача
+     time.sleep(5)
+     bot.send_photo(message.chat.id, url, caption=f"💬Промт:` {prompt}\n`\n💰У вас залишилося ***{generations[user_id] - 1}*** повільних генерацій.", parse_mode="Markdown")
+     generations[user_id] -= 1
+   except:
+     bot.send_message(message.chat.id, "Помилка генерації зображення, спробуйте ще раз.\n\nЯкщо помилка повторилася, зверніться до адміна: @RubiGenSupport.")
   # Зменшення кількості генерацій
-  generations[user_id] -= 1
 
-  # Генерація зображення
-  prompt = message.text
 
-  try:
-    time.sleep(100)
-    from gradio_client import Client
-
-    client = Client("ByteDance/SDXL-Lightning")
-    result = client.predict(
-        prompt,	# str  in 'Enter your prompt (English)' Textbox component
-        "8-Step",	# Literal['1-Step', '2-Step', '4-Step', '8-Step']  in 'Select inference steps' Dropdown component
-        api_name="/generate_image"
-    )
-    url = "https://bytedance-sdxl-lightning.hf.space/file=" + result
-    time.sleep(5)
-    bot.send_photo(message.chat.id, url)
-    bot.send_message(message.chat.id, f'У вас залишилося {generations[user_id]} повільних генерацій.')
-  except:
-    bot.send_message(message.chat.id, "Error")
 
 
 
 def bumon2 (message):
+  prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
   if user_id not in quick_generations:
@@ -138,31 +152,41 @@ def bumon2 (message):
   if quick_generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
       return
-  bot.send_message(message.chat.id, "Почалась швидка генерація, зазвичай вона йде до 2 хвилин")
+  bot.send_message(message.chat.id, "💨Почалась швидка генерація, зазвичай вона триває до 2 хвилин")
   # Зменшення кількості генерацій
   quick_generations[user_id] -= 1
 
   # Генерація зображення
-  prompt = message.text
+  from easygoogletranslate import EasyGoogleTranslate
+  translator = EasyGoogleTranslate()
+  resut = translator.translate(prompt, target_language='en')
+
+  prompt = resut
+
+# Output: Bu bir örnektir.
   try:
-    time.sleep(35)
+    time.sleep(30)
     from gradio_client import Client
 
-    client = Client("ByteDance/SDXL-Lightning")
+    client = Client("AP123/Playground-v2.5")
     result = client.predict(
-        prompt,	# str  in 'Enter your prompt (English)' Textbox component
-        "8-Step",	# Literal['1-Step', '2-Step', '4-Step', '8-Step']  in 'Select inference steps' Dropdown component
+        prompt,	# str  in 'Enter your image prompt' Textbox component
+        50,	# float (numeric value between 1 and 75) in 'Number of Inference Steps' Slider component
+        5,	# float (numeric value between 1 and 10) in 'Guidance Scale' Slider component
         api_name="/generate_image"
     )
-    url = "https://bytedance-sdxl-lightning.hf.space/file=" + result
+    url = "https://ap123-playground-v2-5.hf.space/file=" + result
     time.sleep(5)
-    bot.send_photo(message.chat.id, url)
-    bot.send_message(message.chat.id, f'У вас залишилося {quick_generations[user_id]} швидких генерацій.')
+    bot.send_photo(message.chat.id, url, caption=f"💬Промт:` {prompt}\n`\n💰У вас залишилося ***{quick_generations[user_id]}*** швидких генерацій.", parse_mode="Markdown")
   except:
-                  bot.send_message(message.chat.id, "Error")
+                  bot.send_message(message.chat.id, "Помилка генерації зображення, спробуйте ще раз.\n\nЯкщо помилка повторилась 2 рази, зверніться до адміна: @RubiGenSupport.")
+
+
+
+
 
 def help(message):
-  bot.send_message(message.chat.id, "Я RubiGen, можу генерувати зображення по їх опису.\n\nПідпишіться на Канал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat - Там кожного дня роздають промокоди на генерацію зображень.\n\nКоманди:\n/buy - ❤Купити Premium підписку на бота RubiGen❤\n/gen - Генерувати зображення.\n/help - Допомога та команди.\n/balance - Перевірити баланс.\n/promo - Ввести промокод.\n\nЧасті запитання:\n\nЧому RubiGen не розуміє що я хочу намалювати?\nВідповідь: Промт потрібно писати англійською та більше деталізувати зображення.\n\nЧому бот повертає повністю чорне зображення?\nВідповідь: Тому що зображення порушує фільтр безпеки NSFW.\n\nЗа іншими питаннями звертайтесь до адміна: @RubiGenSupport.\n")
+  bot.send_message(message.chat.id, "Я RubiGen, можу генерувати зображення по їх опису.\n\nПідпишіться на Канал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat - Там роздають промокоди на генерацію зображень.\n\nКоманди:\n/buy - ❤Купити Premium підписку на бота RubiGen❤\n/gen - Генерувати зображення.\n/help - Допомога та команди.\n/balance - Перевірити баланс.\n/promo - Ввести промокод.\n/promter - (BETA) Покращиити промт за допомогою PROmter. \n\nЧасті запитання:\n\nЧому RubiGen не розуміє що я хочу намалювати?\nВідповідь: Промт потрібно писати англійською та більше деталізувати зображення.\n\nЧому бот повертає повністю чорне зображення?\nВідповідь: Тому що зображення порушує фільтр безпеки NSFW.\n\nЗа іншими питаннями звертайтесь до адміна: @RubiGenSupport.\n")
 
 # Функція для обробки команди перевірки залишку генерацій
 def check_generations(message):
@@ -174,7 +198,7 @@ def check_generations(message):
         quick_generations[user_id] = 5
 
     # Повідомлення про залишок генерацій
-    bot.send_message(message.chat.id, f"У вас на балансі {quick_generations[user_id]} швидких генерацій та {generations[user_id]} повільних генерацій.")
+    bot.send_message(message.chat.id, f"💰Наразі у вас на балансі:\n\n💨Швидких генерацій: ***{quick_generations[user_id]}***\n💤Повільних генерацій: ***{generations[user_id]}***", parse_mode="Markdown")
 
 # Реєстрація команд
 bot.register_message_handler(check_generations, commands=['balance'])
@@ -192,7 +216,7 @@ def send_m(message):
     bot.send_message(message.chat.id, "Error: you not admin")
 def send_message_to_users(message):
     message_text = message.text
-    
+
     with open("users.txt", "r") as f:
         for user_id in f.readlines():
             bot.send_message(user_id, message_text)
@@ -201,7 +225,7 @@ def send_message_to_users(message):
 
 
 
-   
+
 
 
 
@@ -292,15 +316,18 @@ def add_buy_user(message):
         usertelegids.remove(userbuyid)
         bot.send_message(message.chat.id, f"<b>Вам на баланс начислено {quick_generations[user_id]} швидких генерацій та {generations[user_id]} повільних генерацій.</b>\n\n\n❗❗❗УВАГА❗❗❗\n\n❌НЕ ВИКОРИСТОВУЙТЕ КОМАНДУ \"promo\" ВИ МОЖЕТЕ ВТРАТИТИ СВОЮ Premium ПІДПИСКУ❌\n\n♥️Дякуємо що користуєтесь нашим телеграм ботом♥️", parse_mode="HTML")
       else:
-        bot.send_message(message.chat.id, f"Premium підписка RubiGen Basic - Включає в себе 200 швидких генерацій, 400 повільних та велику нашу подяку.\n\nЩоб купити Premium підписку на нашого бота вам потрібно перевести 100грн на номер картки: 5375414122338071\nЗ ось таким описом: <b>Оплата за Premium Basic: {message.chat.id}</b>\n\nПісля здійснення оплати вам прийде повідомлення про нарахування генерацій.\n\nЯкщо ви через 24 години ви не отримали одобрення платежу тоді зверніться до адміна: @RubiGenSupport.", parse_mode="HTML")
-        
+        bot.send_message(message.chat.id, f"Premium підписка RubiGen Basic - Включає в себе 200 швидких генерацій, 400 повільних та велику нашу подяку.\n\nЩоб купити Premium підписку на нашого бота вам потрібно перевести 100грн на номер картки: `5375414122338071`\nЗ ось таким описом: `Оплата за Premium Basic: {message.chat.id}`\n\nПісля здійснення оплати вам прийде повідомлення про нарахування генерацій.\n\nЯкщо ви через 24 години ви не отримали одобрення платежу тоді зверніться до адміна: @RubiGenSupport.", parse_mode="Markdown")
+
 def next_add_buy (message):
   global usertelegids
   global userbuyid
   userbuyid = message.text
   usertelegids.append(userbuyid)
   bot.send_message(message.chat.id, "Користувача додано до списку.")
-  bot.send_message(userbuyid, "Вам підтвердили оплату premium підписки.\n\n❗❗❗УВАГА❗❗❗\n\n💬ВВЕДІТЬ КОМАНДУ /buy ЩОБ ОТРИМАТИ: 200 ШВИДКИХ ТА 400 ПОВІЛЬНИХ ГЕНЕРАЦІЙ💬\n\n♥️Дякуємо що користуєтесь нашим телеграм ботом♥️")
+  try:
+    bot.send_message(userbuyid, "Вам підтвердили оплату premium підписки.\n\n❗❗❗УВАГА❗❗❗\n\n💬ВВЕДІТЬ КОМАНДУ /buy ЩОБ ОТРИМАТИ: 200 ШВИДКИХ ТА 400 ПОВІЛЬНИХ ГЕНЕРАЦІЙ💬\n\n♥️Дякуємо що користуєтесь нашим телеграм ботом♥️")
+  except:
+    bot.send_message(message.chat.id, f"Користувача з таким id: `{userbuyid}`, немає або користувач НЕ запустив бота.", parse_mode="Markdown")
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -315,10 +342,10 @@ def send_welcome(message):
         # Запис ID користувача в файл
         with open("users.txt", "a") as f:
             f.write(f"{user_id}\n")
-        
+
         # Додавання ID користувача до списку
         all_users.append(user_id)
-        bot.reply_to(message, "Привіт, я бот, який може безкоштовно генерувати зображення. У вас 5 швидкісних генерацій та 10 повільних. Введіть команду /help щоб почати.")
+        bot.reply_to(message, "Вітаємо вас у RubiGen bot який може безкоштовно генерувати зображення.\nУ вас 5 швидкісних генерацій та 10 повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
     # Створення запису для нового користувача
     if user_id not in generations:
         generations[user_id] = 10
@@ -335,15 +362,36 @@ def send_welcome(message):
 
 
 
+@bot.message_handler(commands=['promter'])
+def beta_promter(message):
+  bot.send_message(message.chat.id, "‼Увага‼\nНаразі ***PROmter*** це ***BETA*** версія, іноді може давати неправильні результати!\n\nВведіть ваш промт будь якою мовою, а я спробую його покращити👇", parse_mode="Markdown")
+  bot.register_next_step_handler(message, promter)
+def promter(message):
+  chat_text = message.text
+  bot.send_message(message.chat.id, "PROmter зараз займається покращенням вашого промту, зазвичай це триває до 35 секунд.")
+  from easygoogletranslate import EasyGoogleTranslate
+  translator = EasyGoogleTranslate()
+  resut = translator.translate(chat_text, target_language='en')
 
+  chat_text = resut
+  from gradio_client import Client
+  client = Client("Qwen/Qwen1.5-32B-Chat-demo")
+  result = client.predict(
+   query=chat_text,
+   history=[],
+   system="Enhance the prompt provided by the user for generating images, adding more details and improving it. Return only the improved prompt without any unnecessary words or punctuation marks.",
+   api_name="/model_chat"
+  )
 
-
-
-
-
+  # Виводити лише друге значення (репліку асистента)
+  writed_prompt = result[1][0][1]
+  bot.send_message(message.chat.id, f"\****Покращанний промт***: `{writed_prompt}`\n\n\* - іноді PROmter може навпаки, погіршити промт.\n\n\nПриєднайтесь до каналу RubiGen щоб бачити більше новин про оновлення: https://t.me/RubiGenChanel", parse_mode="Markdown")
 
 
 keep_alive()
+
+
+
 
 while True:
   try:
@@ -351,6 +399,4 @@ while True:
   except Exception as e:
           bot.send_message(6133407632 ,f"Помилка: {e}")
           time.sleep(1)
-
-
 
