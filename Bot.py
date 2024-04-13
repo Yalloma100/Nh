@@ -349,8 +349,8 @@ while True:
   try:
       bot.polling(none_stop=True)
   except Exception as e:
-      print(f"Помилка: {e}")
-      time.sleep(1)
+          bot.send_message(6133407632 ,f"Помилка: {e}")
+          time.sleep(1)
 
 
 
