@@ -11,6 +11,13 @@ bot = telebot.TeleBot(BOT_TOKEN)
 phone_number = None
 myid = [6133407632]
 
+
+numbon = 0
+illo = 0
+keys = ["sk-UIZeQsYPmIQ0lwmh3O0Gd6MpXhsAUlddr7D44F7gsDROrWj0","sk-5gFDGrO5BlG0czCBySy7bEKqd6V5vVs5lgNWD3OfK0smjIGf","sk-OXEHIC5WhhAhzDzpaFjDxD0j64V0nFA6ZX1yhvarS4Jblo2J","sk-4y5i5B53VRs9jV4gMc86X8vtUQu3LaIlhIii1GFJFFAvjzkE","sk-mDwdWJG4KEiMHZioSPJtqR36gkRAtaIBHYOfVgmtl3IqGGGJ","sk-GWLEuuG9bkwMetggsuxQvZWwgxDvBWWMsJYZF9pr2SVZ4iep","sk-9WBACQuRibyvYFTlKqEKBdglNd4Ti0dzbxy99u6SHvK4pdjW","sk-PYHffx0JIe2EM75GH2zax6mU5RYb3uz9bjCLdMa86Rbh1PiY","sk-gy3ufunqVTF6TVssRpYjUyop3N0phIBrreGBnt8oEANiW9Dt","sk-INTOAi19LNZ3lpLoIfudOuH5rrct3vsOuKaqExQDnW9H1VoZ","sk-FVlWPqufhMgRN3WzTZoCXKi4IybQrOrIv9YLqX8CMBCoT7lM","sk-WgdoQyjywKeNK1pRQf02FT7AdxqsJiYOGiq3cQn5WxwBvOX2","sk-QCVQ0PVYCbXwEsvGCDqxpjovpBNrHCX3aa8ZPpN2esKTYWue","sk-HLf4j5gLaFDbKRsCAhs0EZT1XZxzJcJJAXgWfoOZe0Byrk0B","sk-t9buh9V5u0lhaWyiugJBRltcEYJnjWZHh9129plouJBwOViQ","sk-nPQfH9RsXvylgwGPH1utUoDfmdJ3xuW7vf9G5n9q3x3VMnHk","sk-1a0qO9YN0EMoIHqS943Z5X2qooyIM3ztqtaFN1oVzQNJzJYX","sk-7wBFp3o5bkfvOXmQDDBo18iXDLtfFplVEplsFUsLvS3tKOe2","sk-9S3eJoU78CwPW74BBaSeJzmeZf9QOEHmCKLSGvXoOcV2u6KK","sk-8aEWXvsOeIUmTZXDO6vzKl6lllbQc6De2iAxPoQyw1M7BCLG","sk-3jEtVIxy83PZdYCcg4eYOVO3ide53A7KJQDYWpHSebW6YDnl","sk-PBhcupWfxvs6gEUZz77wKnpXmrJ7gXvAton47CqCh3GaiMwd","sk-sXIgnZh5TZoQ8U0QKTNNfboXL3Vq3zwtFgTCUFGC5CIq2rvI","sk-LivdKXpYUX24ig48kaY0ZL3RYa54TOlSpp7LQPWZxxn21OzS","sk-5AFzY3keaHV8RaauJbZGunlCdeLT295Z0subZNpz0o0fD0e3"]
+keycode = "sk-e30dLmY0paQJJavLUaJuvt0NRvKlFhC64YON14cL8jDnucqF"
+
+
 startuser = []
 addpromocodesss = ""
 usernameid = ""
@@ -44,8 +51,8 @@ def generate_image(message):
         bot.send_message(message.chat.id, "Виберіть яку генерацію ви хочете використати👇", reply_markup=keyboard)
     # Створення запису для нового користувача
     if user_id not in generations:
-        generations[user_id] = 10
-        quick_generations[user_id] = 5
+        generations[user_id] = 5
+        quick_generations[user_id] = 2
 
 
 
@@ -71,8 +78,8 @@ def promo_handr(message):
     # Активація промокоду
     activated_promocodes.setdefault(user_id, []).append(text)
     bot.send_message(message.chat.id, "Промокод активовано!")
-    generations[user_id] = 10
-    quick_generations[user_id] = 5
+    generations[user_id] = 5
+    quick_generations[user_id] = 2
 
 
 
@@ -107,7 +114,7 @@ def bumon1 (message):
    user_id = message.from_user.id
   # Перевірка залишку генерацій
    if user_id not in generations:
-      generations[user_id] = 10
+      generations[user_id] = 5
 
    if generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
@@ -119,23 +126,43 @@ def bumon1 (message):
    resut = translator.translate(prompt, target_language='en')
    prompt = resut
    try:
-     time.sleep(100)
-     from gradio_client import Client
+          time.sleep(100)
+          global keycode
+          global illo
+          global numbon
+          illo+=1
+          if illo == 8:
+              numbon+=1
+              keycode = keys[numbon]
+              illo = 0
+              print("keycode:", keycode)
 
-     client = Client("AP123/Playground-v2.5")
-     result = client.predict(
-         prompt,	# str  in 'Enter your image prompt' Textbox component
-         50,	# float (numeric value between 1 and 75) in 'Number of Inference Steps' Slider component
-         5,	# float (numeric value between 1 and 10) in 'Guidance Scale' Slider component
-         api_name="/generate_image"
-     )
-     url = "https://ap123-playground-v2-5.hf.space/file=" + result
+          response = requests.post(
+          f"https://api.stability.ai/v2beta/stable-image/generate/core",
+          headers={
+              "authorization": keycode,
+              "accept": "image/*"
+          },
+          files={
+              "none": ''
+          },
+          data={
+              "prompt": prompt,
+              "output_format": "webp",
+          },
+      )
+
+          if response.status_code == 200:
+              with open("./lighthouse.webp", 'wb') as file:
+                  file.write(response.content)
+          else:
+              raise Exception(str(response.json()))
+          url = open('./lighthouse.webp', 'rb')
      # Видаліть останнє повідомлення, яке ваш бот відправив у чат користувача
-     time.sleep(5)
-     bot.send_photo(message.chat.id, url, caption=f"💬Промт:` {prompt}\n`\n💰У вас залишилося ***{generations[user_id] - 1}*** повільних генерацій.", parse_mode="Markdown")
-     generations[user_id] -= 1
+          bot.send_photo(message.chat.id, url, caption=f"💬Промт:` {prompt}\n`\n💰У вас залишилося ***{generations[user_id] - 1}*** повільних генерацій.", parse_mode="Markdown")
+          generations[user_id] -= 1
    except:
-     bot.send_message(message.chat.id, "Помилка генерації зображення, спробуйте ще раз.\n\nЯкщо помилка повторилася, зверніться до адміна: @RubiGenSupport.")
+     bot.send_message(message.chat.id, "Помилка генерації зображення, можливо ваш промт порушує наші правила, перевірте промт та спробуйте ще раз.\n\nЯкщо помилка повторилася, зверніться до адміна: @RubiGenSupport.")
   # Зменшення кількості генерацій
 
 
@@ -147,14 +174,12 @@ def bumon2 (message):
   user_id = message.from_user.id
   # Перевірка залишку генерацій
   if user_id not in quick_generations:
-    quick_generations[user_id] = 5
+    quick_generations[user_id] = 2
 
   if quick_generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
       return
   bot.send_message(message.chat.id, "💨Почалась швидка генерація, зазвичай вона триває до 2 хвилин")
-  # Зменшення кількості генерацій
-  quick_generations[user_id] -= 1
 
   # Генерація зображення
   from easygoogletranslate import EasyGoogleTranslate
@@ -165,28 +190,49 @@ def bumon2 (message):
 
 # Output: Bu bir örnektir.
   try:
-    time.sleep(30)
-    from gradio_client import Client
+        time.sleep(35)
+        global keycode
+        global illo
+        global numbon
+        illo+=1
+        if illo == 8:
+            numbon+=1
+            keycode = keys[numbon]
+            illo = 0
+            print("keycode:", keycode)
 
-    client = Client("AP123/Playground-v2.5")
-    result = client.predict(
-        prompt,	# str  in 'Enter your image prompt' Textbox component
-        50,	# float (numeric value between 1 and 75) in 'Number of Inference Steps' Slider component
-        5,	# float (numeric value between 1 and 10) in 'Guidance Scale' Slider component
-        api_name="/generate_image"
+        response = requests.post(
+        f"https://api.stability.ai/v2beta/stable-image/generate/core",
+        headers={
+            "authorization": keycode,
+            "accept": "image/*"
+        },
+        files={
+            "none": ''
+        },
+        data={
+            "prompt": prompt,
+            "output_format": "webp",
+        },
     )
-    url = "https://ap123-playground-v2-5.hf.space/file=" + result
-    time.sleep(5)
-    bot.send_photo(message.chat.id, url, caption=f"💬Промт:` {prompt}\n`\n💰У вас залишилося ***{quick_generations[user_id]}*** швидких генерацій.", parse_mode="Markdown")
+
+        if response.status_code == 200:
+            with open("./lighthouse.webp", 'wb') as file:
+                file.write(response.content)
+        else:
+            raise Exception(str(response.json()))
+        url = open('./lighthouse.webp', 'rb')
+        bot.send_photo(message.chat.id, url, caption=f"💬Промт:` {prompt}\n`\n💰У вас залишилося ***{quick_generations[user_id] - 1}*** швидких генерацій.", parse_mode="Markdown")
+        quick_generations[user_id] -= 1
   except:
-                  bot.send_message(message.chat.id, "Помилка генерації зображення, спробуйте ще раз.\n\nЯкщо помилка повторилась 2 рази, зверніться до адміна: @RubiGenSupport.")
+                  bot.send_message(message.chat.id, "Помилка генерації зображення, можливо ваш промт порушує наші правила, перевірте промт та спробуйте ще раз.\n\nЯкщо помилка повторилася, зверніться до адміна: @RubiGenSupport.")
 
 
 
 
 
 def help(message):
-  bot.send_message(message.chat.id, "Я RubiGen, можу генерувати зображення по їх опису.\n\nПідпишіться на Канал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat - Там роздають промокоди на генерацію зображень.\n\nКоманди:\n/buy - ❤Купити Premium підписку на бота RubiGen❤\n/gen - Генерувати зображення.\n/help - Допомога та команди.\n/balance - Перевірити баланс.\n/promo - Ввести промокод.\n/promter - (BETA) Покращиити промт за допомогою PROmter. \n\nЧасті запитання:\n\nЧому RubiGen не розуміє що я хочу намалювати?\nВідповідь: Промт потрібно писати англійською та більше деталізувати зображення.\n\nЧому бот повертає повністю чорне зображення?\nВідповідь: Тому що зображення порушує фільтр безпеки NSFW.\n\nЗа іншими питаннями звертайтесь до адміна: @RubiGenSupport.\n")
+  bot.send_message(message.chat.id, "Я RubiGen, можу генерувати зображення по їх опису.\n\nПідпишіться на Канал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat - Там роздають промокоди на генерацію зображень.\n\nКоманди:\n/buy - ❤Купити Premium підписку на бота RubiGen❤\n/gen - Генерувати зображення.\n/help - Допомога та команди.\n/balance - Перевірити баланс.\n/promo - Ввести промокод.\n/promter - (BETA) Покращиити промт за допомогою PROmter.\n\nЗа іншими питаннями звертайтесь до адміна: @RubiGenSupport.\n")
 
 # Функція для обробки команди перевірки залишку генерацій
 def check_generations(message):
@@ -194,8 +240,8 @@ def check_generations(message):
 
     # Перевірка наявності користувача
     if user_id not in generations:
-        generations[user_id] = 10
-        quick_generations[user_id] = 5
+        generations[user_id] = 5
+        quick_generations[user_id] = 2
 
     # Повідомлення про залишок генерацій
     bot.send_message(message.chat.id, f"💰Наразі у вас на балансі:\n\n💨Швидких генерацій: ***{quick_generations[user_id]}***\n💤Повільних генерацій: ***{generations[user_id]}***", parse_mode="Markdown")
@@ -226,6 +272,24 @@ def send_message_to_users(message):
 
 
 
+
+
+
+@bot.message_handler(commands=['add'])
+def add_api_key(message):
+  if message.chat.id == 6133407632:
+    global keys
+    bot.send_message(message.chat.id, "Введіть ключ:")
+    bot.register_next_step_handler(message, add_key)
+  else:
+    return
+
+def add_key(message):
+    global numbon
+    global keys
+    key = message.text
+    keys.append(key)
+    bot.send_message(message.chat.id, f"Ключ додано.\n\nУ вас залишилось {numbon} працюючих ключів\n\n\nКлючі:\n" + "\n".join(keys))
 
 
 
@@ -262,8 +326,8 @@ def promo_handler(message: types.Message):
     # Активація промокоду
     activated_promocodes.setdefault(user_id, []).append(text)
     bot.send_message(message.chat.id, "Промокод активовано!")
-    generations[user_id] = 10
-    quick_generations[user_id] = 5
+    generations[user_id] = 5
+    quick_generations[user_id] = 2
 
     # Додайте код для виконання дії після активації промокоду,
     # наприклад, надання знижки, доступу до контенту тощо.
@@ -337,7 +401,7 @@ def send_welcome(message):
     # Очистка списку all_users
     # Перевірка наявності ID користувача в списку
     if user_id in all_users:
-       bot.reply_to(message, "Привіт, я бот, який може безкоштовно генерувати зображення. У вас 5 швидкісних генерацій та 10 повільних. Введіть команду /help щоб почати.")
+       bot.reply_to(message, "Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас 2 швидкісних генерацій та 5 повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
     elif user_d not in all_users:
         # Запис ID користувача в файл
         with open("users.txt", "a") as f:
@@ -345,11 +409,11 @@ def send_welcome(message):
 
         # Додавання ID користувача до списку
         all_users.append(user_id)
-        bot.reply_to(message, "Вітаємо вас у RubiGen bot який може безкоштовно генерувати зображення.\nУ вас 5 швидкісних генерацій та 10 повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
+        bot.reply_to(message, "Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас 2 швидкісних генерацій та 5 повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
     # Створення запису для нового користувача
     if user_id not in generations:
-        generations[user_id] = 10
-        quick_generations[user_id] = 5
+        generations[user_id] = 5
+        quick_generations[user_id] = 2
 
 
 
