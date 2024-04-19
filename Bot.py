@@ -2,25 +2,28 @@ import os
 import requests
 import telebot
 import time
+
+from telebot.util import quick_markup
 from background import keep_alive
 from telebot import types
 
 BOT_TOKEN = "6754268225:AAFN5qOtXqjMemojBbY0pIHhzJWc1AH1fCI" # Замініть це своїм токеном бота
 bot = telebot.TeleBot(BOT_TOKEN)
 
+
+
+quick_genaratus = 2
+genaratus = 5
 phone_number = None
 myid = [6133407632]
-
-
 numbon = 0
 illo = 0
-keys = ["sk-UIZeQsYPmIQ0lwmh3O0Gd6MpXhsAUlddr7D44F7gsDROrWj0","sk-5gFDGrO5BlG0czCBySy7bEKqd6V5vVs5lgNWD3OfK0smjIGf","sk-OXEHIC5WhhAhzDzpaFjDxD0j64V0nFA6ZX1yhvarS4Jblo2J","sk-4y5i5B53VRs9jV4gMc86X8vtUQu3LaIlhIii1GFJFFAvjzkE","sk-mDwdWJG4KEiMHZioSPJtqR36gkRAtaIBHYOfVgmtl3IqGGGJ","sk-GWLEuuG9bkwMetggsuxQvZWwgxDvBWWMsJYZF9pr2SVZ4iep","sk-9WBACQuRibyvYFTlKqEKBdglNd4Ti0dzbxy99u6SHvK4pdjW","sk-PYHffx0JIe2EM75GH2zax6mU5RYb3uz9bjCLdMa86Rbh1PiY","sk-gy3ufunqVTF6TVssRpYjUyop3N0phIBrreGBnt8oEANiW9Dt","sk-INTOAi19LNZ3lpLoIfudOuH5rrct3vsOuKaqExQDnW9H1VoZ","sk-FVlWPqufhMgRN3WzTZoCXKi4IybQrOrIv9YLqX8CMBCoT7lM","sk-WgdoQyjywKeNK1pRQf02FT7AdxqsJiYOGiq3cQn5WxwBvOX2","sk-QCVQ0PVYCbXwEsvGCDqxpjovpBNrHCX3aa8ZPpN2esKTYWue","sk-HLf4j5gLaFDbKRsCAhs0EZT1XZxzJcJJAXgWfoOZe0Byrk0B","sk-t9buh9V5u0lhaWyiugJBRltcEYJnjWZHh9129plouJBwOViQ","sk-nPQfH9RsXvylgwGPH1utUoDfmdJ3xuW7vf9G5n9q3x3VMnHk","sk-1a0qO9YN0EMoIHqS943Z5X2qooyIM3ztqtaFN1oVzQNJzJYX","sk-7wBFp3o5bkfvOXmQDDBo18iXDLtfFplVEplsFUsLvS3tKOe2","sk-9S3eJoU78CwPW74BBaSeJzmeZf9QOEHmCKLSGvXoOcV2u6KK","sk-8aEWXvsOeIUmTZXDO6vzKl6lllbQc6De2iAxPoQyw1M7BCLG","sk-3jEtVIxy83PZdYCcg4eYOVO3ide53A7KJQDYWpHSebW6YDnl","sk-PBhcupWfxvs6gEUZz77wKnpXmrJ7gXvAton47CqCh3GaiMwd","sk-sXIgnZh5TZoQ8U0QKTNNfboXL3Vq3zwtFgTCUFGC5CIq2rvI","sk-LivdKXpYUX24ig48kaY0ZL3RYa54TOlSpp7LQPWZxxn21OzS","sk-5AFzY3keaHV8RaauJbZGunlCdeLT295Z0subZNpz0o0fD0e3"]
-keycode = "sk-e30dLmY0paQJJavLUaJuvt0NRvKlFhC64YON14cL8jDnucqF"
-
-
+keys = ["sk-3P2bWU1eh2HsGznwOxaF9mCaa3KSgVS4Rn2z46QbsqTD8FZY","sk-5gFDGrO5BlG0czCBySy7bEKqd6V5vVs5lgNWD3OfK0smjIGf","sk-OXEHIC5WhhAhzDzpaFjDxD0j64V0nFA6ZX1yhvarS4Jblo2J","sk-4y5i5B53VRs9jV4gMc86X8vtUQu3LaIlhIii1GFJFFAvjzkE","sk-mDwdWJG4KEiMHZioSPJtqR36gkRAtaIBHYOfVgmtl3IqGGGJ","sk-GWLEuuG9bkwMetggsuxQvZWwgxDvBWWMsJYZF9pr2SVZ4iep","sk-9WBACQuRibyvYFTlKqEKBdglNd4Ti0dzbxy99u6SHvK4pdjW","sk-PYHffx0JIe2EM75GH2zax6mU5RYb3uz9bjCLdMa86Rbh1PiY","sk-gy3ufunqVTF6TVssRpYjUyop3N0phIBrreGBnt8oEANiW9Dt","sk-INTOAi19LNZ3lpLoIfudOuH5rrct3vsOuKaqExQDnW9H1VoZ","sk-FVlWPqufhMgRN3WzTZoCXKi4IybQrOrIv9YLqX8CMBCoT7lM","sk-WgdoQyjywKeNK1pRQf02FT7AdxqsJiYOGiq3cQn5WxwBvOX2","sk-QCVQ0PVYCbXwEsvGCDqxpjovpBNrHCX3aa8ZPpN2esKTYWue","sk-HLf4j5gLaFDbKRsCAhs0EZT1XZxzJcJJAXgWfoOZe0Byrk0B","sk-t9buh9V5u0lhaWyiugJBRltcEYJnjWZHh9129plouJBwOViQ","sk-nPQfH9RsXvylgwGPH1utUoDfmdJ3xuW7vf9G5n9q3x3VMnHk","sk-1a0qO9YN0EMoIHqS943Z5X2qooyIM3ztqtaFN1oVzQNJzJYX","sk-7wBFp3o5bkfvOXmQDDBo18iXDLtfFplVEplsFUsLvS3tKOe2","sk-9S3eJoU78CwPW74BBaSeJzmeZf9QOEHmCKLSGvXoOcV2u6KK","sk-8aEWXvsOeIUmTZXDO6vzKl6lllbQc6De2iAxPoQyw1M7BCLG","sk-3jEtVIxy83PZdYCcg4eYOVO3ide53A7KJQDYWpHSebW6YDnl","sk-PBhcupWfxvs6gEUZz77wKnpXmrJ7gXvAton47CqCh3GaiMwd","sk-sXIgnZh5TZoQ8U0QKTNNfboXL3Vq3zwtFgTCUFGC5CIq2rvI","sk-LivdKXpYUX24ig48kaY0ZL3RYa54TOlSpp7LQPWZxxn21OzS","sk-5AFzY3keaHV8RaauJbZGunlCdeLT295Z0subZNpz0o0fD0e3"]
+keycode = "sk-N39wrTiB67lLCuito1DwKqY82S4sjcNWGduD352yO6nBWcxH"
 startuser = []
 addpromocodesss = ""
 usernameid = ""
+
 
 # Створення словника для зберігання інформації про генерації
 generations = {}
@@ -28,6 +31,8 @@ quick_generations = {}
 @bot.message_handler(commands=['gen'])
 # Функція для обробки команди генерації зображення
 def generate_image(message):
+    global quick_genaratus
+    global genaratus
     user_id = message.from_user.id
     user_d = message.chat.id
     # Створення двох кнопок
@@ -51,36 +56,8 @@ def generate_image(message):
         bot.send_message(message.chat.id, "Виберіть яку генерацію ви хочете використати👇", reply_markup=keyboard)
     # Створення запису для нового користувача
     if user_id not in generations:
-        generations[user_id] = 5
-        quick_generations[user_id] = 2
-
-
-
-@bot.message_handler(commands=["promo"])
-def promo_handr(message):
-    user_id = message.chat.id
-    try:
-    # Отримання тексту повідомлення
-      text = message.text.split(' ')[1]
-    except:
-      bot.send_message(message.chat.id, "Вводьте в такому форматі: \n/promo code, на місті \"code\" вставте ваш промокод.")
-      return
-    # Перевірка, чи вже користувач активував промокод
-    if text in activated_promocodes.get(user_id, []):
-        bot.send_message(message.chat.id, "Ви вже активували промокод.")
-        return
-
-    # Перевірка, чи введений промокод дійсний
-    if text not in promocodes:
-        bot.send_message(message.chat.id, "Неправильний промокод.")
-        return
-
-    # Активація промокоду
-    activated_promocodes.setdefault(user_id, []).append(text)
-    bot.send_message(message.chat.id, "Промокод активовано!")
-    generations[user_id] = 5
-    quick_generations[user_id] = 2
-
+        generations[user_id] = genaratus
+        quick_generations[user_id] = quick_genaratus
 
 
 
@@ -114,7 +91,7 @@ def bumon1 (message):
    user_id = message.from_user.id
   # Перевірка залишку генерацій
    if user_id not in generations:
-      generations[user_id] = 5
+      generations[user_id] = genaratus
 
    if generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
@@ -174,7 +151,7 @@ def bumon2 (message):
   user_id = message.from_user.id
   # Перевірка залишку генерацій
   if user_id not in quick_generations:
-    quick_generations[user_id] = 2
+    quick_generations[user_id] = quick_genaratus
 
   if quick_generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
@@ -231,8 +208,11 @@ def bumon2 (message):
 
 
 
+
+
+
 def help(message):
-  bot.send_message(message.chat.id, "Я RubiGen, можу генерувати зображення по їх опису.\n\nПідпишіться на Канал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat - Там роздають промокоди на генерацію зображень.\n\nКоманди:\n/buy - ❤Купити Premium підписку на бота RubiGen❤\n/gen - Генерувати зображення.\n/help - Допомога та команди.\n/balance - Перевірити баланс.\n/promo - Ввести промокод.\n/promter - (BETA) Покращиити промт за допомогою PROmter.\n\nЗа іншими питаннями звертайтесь до адміна: @RubiGenSupport.\n")
+  bot.send_message(message.chat.id, "Я RubiGen, можу генерувати зображення по їх опису.\n\nПідпишіться на Канал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat - Там роздають промокоди на генерацію зображень.\n\nКоманди:\n/buy - ❤Купити Premium підписку на бота RubiGen❤\n/gen - Генерувати зображення.\n/help - Допомога та команди.\n/balance - Перевірити баланс.\n/promo - Ввести промокод.\n/promter - (BETA) Покращиити промт за допомогою PROmter.\n/ref - Отримати рефиральне посилання.\n\nЗа питаннями та допомогою звертайтесь до адміна: @RubiGenSupport.\n")
 
 # Функція для обробки команди перевірки залишку генерацій
 def check_generations(message):
@@ -240,8 +220,8 @@ def check_generations(message):
 
     # Перевірка наявності користувача
     if user_id not in generations:
-        generations[user_id] = 5
-        quick_generations[user_id] = 2
+        generations[user_id] = genaratus
+        quick_generations[user_id] = quick_genaratus
 
     # Повідомлення про залишок генерацій
     bot.send_message(message.chat.id, f"💰Наразі у вас на балансі:\n\n💨Швидких генерацій: ***{quick_generations[user_id]}***\n💤Повільних генерацій: ***{generations[user_id]}***", parse_mode="Markdown")
@@ -262,15 +242,8 @@ def send_m(message):
     bot.send_message(message.chat.id, "Error: you not admin")
 def send_message_to_users(message):
     message_text = message.text
-
-    with open("users.txt", "r") as f:
-        for user_id in f.readlines():
-            bot.send_message(user_id, message_text)
-
-
-
-
-
+    for user_id in all_users:
+      bot.send_message(user_id, message_text)
 
 
 
@@ -303,10 +276,13 @@ activated_promocodes = {}
 
 @bot.message_handler(commands=["promo"])
 def promo_handler(message: types.Message):
-  global userbuyid
-  if userbuyid in usertelegids:
-    bot.send_message(message.chat.id, "Ви не можите активувати ніякі промокоди.")
-    user_id = message.chat.id
+  global quick_genaratus
+  global genaratus
+  user_id = message.chat.id
+  if quick_generations[user_id] > quick_genaratus:
+    if generations[user_id] > genaratus:
+      bot.send_message(message.chat.id, f"Ви не можите активувати ніякі промокоди, тому що: промокоди відновлюють генерації зображень, а у вас наразі більше ніж ***{genaratus}*** повільних та ***{quick_genaratus}*** швидких генерацій.", parse_mode="Markdown")
+      return
     try:
     # Отримання тексту повідомлення
       text = message.text.split(' ')[1]
@@ -326,8 +302,8 @@ def promo_handler(message: types.Message):
     # Активація промокоду
     activated_promocodes.setdefault(user_id, []).append(text)
     bot.send_message(message.chat.id, "Промокод активовано!")
-    generations[user_id] = 5
-    quick_generations[user_id] = 2
+    generations[user_id] = genaratus
+    quick_generations[user_id] = quick_genaratus
 
     # Додайте код для виконання дії після активації промокоду,
     # наприклад, надання знижки, доступу до контенту тощо.
@@ -354,54 +330,48 @@ def send_messall(message):
 
 
 
-
-
-
 userbuyid = ""
 usertelegids = []
+
 
 @bot.message_handler(commands=['buy'])
 def add_buy_user(message):
     global usertelegids
-    user_id = message.from_user.id
     user_d = message.chat.id
     if user_d == 6133407632:
       bot.send_message(message.chat.id, "Введіть телеграм id нового premium користувача:")
       bot.register_next_step_handler(message, next_add_buy)
     else:
-      global usertelegids
-      global userbuyid
-      if userbuyid in usertelegids:
-        user_id = message.chat.id
-        global generations
-        global quick_generations
-        generations[user_id] = 400
-        quick_generations[user_id] = 200
-        usertelegids.remove(userbuyid)
-        bot.send_message(message.chat.id, f"<b>Вам на баланс начислено {quick_generations[user_id]} швидких генерацій та {generations[user_id]} повільних генерацій.</b>\n\n\n❗❗❗УВАГА❗❗❗\n\n❌НЕ ВИКОРИСТОВУЙТЕ КОМАНДУ \"promo\" ВИ МОЖЕТЕ ВТРАТИТИ СВОЮ Premium ПІДПИСКУ❌\n\n♥️Дякуємо що користуєтесь нашим телеграм ботом♥️", parse_mode="HTML")
-      else:
-        bot.send_message(message.chat.id, f"Premium підписка RubiGen Basic - Включає в себе 200 швидких генерацій, 400 повільних та велику нашу подяку.\n\nЩоб купити Premium підписку на нашого бота вам потрібно перевести 100грн на номер картки: `5375414122338071`\nЗ ось таким описом: `Оплата за Premium Basic: {message.chat.id}`\n\nПісля здійснення оплати вам прийде повідомлення про нарахування генерацій.\n\nЯкщо ви через 24 години ви не отримали одобрення платежу тоді зверніться до адміна: @RubiGenSupport.", parse_mode="Markdown")
+        bot.send_message(message.chat.id, f"Premium підписка RubiGen Basic - Включає в себе ***50*** швидких генерацій, ***100*** повільних та велику нашу подяку.\n\nЩоб купити Premium підписку на нашого бота вам потрібно перевести 100грн на номер картки: `5375414122338071`\nЗ ось таким описом: `Оплата за Premium Basic: {message.chat.id}`\n\nПісля здійснення оплати вам прийде повідомлення про нарахування генерацій.\n\nЯкщо ви через 24 години ви не отримали одобрення платежу тоді зверніться до адміна: @RubiGenSupport.", parse_mode="Markdown")
 
 def next_add_buy (message):
   global usertelegids
   global userbuyid
   userbuyid = message.text
   usertelegids.append(userbuyid)
-  bot.send_message(message.chat.id, "Користувача додано до списку.")
+  bot.send_message(message.chat.id, f"Premium користувача з таким id: `{userbuyid}` додано успішно.", parse_mode="Markdown")
   try:
-    bot.send_message(userbuyid, "Вам підтвердили оплату premium підписки.\n\n❗❗❗УВАГА❗❗❗\n\n💬ВВЕДІТЬ КОМАНДУ /buy ЩОБ ОТРИМАТИ: 200 ШВИДКИХ ТА 400 ПОВІЛЬНИХ ГЕНЕРАЦІЙ💬\n\n♥️Дякуємо що користуєтесь нашим телеграм ботом♥️")
+    typeint = int(userbuyid)
+    generations[typeint] = 100
+    quick_generations[typeint] = 50
+    bot.send_message(userbuyid, f"🎉Оплата пройшла успішно!\n\n💬Вам на баланс нараховано: ***{quick_generations[typeint]}*** ШВИДКИХ ТА ***{generations[typeint]}*** ПОВІЛЬНИХ ГЕНЕРАЦІЙ💬\n\n♥️Дякуємо що користуєтесь нашим телеграм ботом♥️", parse_mode="Markdown")
   except:
     bot.send_message(message.chat.id, f"Користувача з таким id: `{userbuyid}`, немає або користувач НЕ запустив бота.", parse_mode="Markdown")
 
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    user_id = message.from_user.id
-    user_d = message.chat.id
-    # Перевірка наявності ID користувача в списку
-    # Очистка списку all_users
-    # Перевірка наявності ID користувача в списку
+
+@bot.message_handler(commands=["ref"])
+def send_refrence(message):
+    bot.send_message(message.chat.id, f"🎁 Реферальна програма:\n\n💡 Твоїм рефералом вважається будь-який користувач, який уперше потрапив у систему через твоє посилання.\n\n🔗Ваше реферальне посилання: `https://t.me/imagenerabot?start={message.chat.id}`\n\nЗа кожну людину яка приєднається до нашого бота по вашому посиланю, ви отримаєте ***5*** швидких та ***10*** повільних генерацій.", parse_mode="Markdown")
+
+@bot.message_handler(commands=["start"])
+def send_awesome(message):
+  user_d = message.chat.id
+  user_id = message.from_user.id
+  try:
+    text = message.text.split(' ')[1]
+  except:
     if user_id in all_users:
-       bot.reply_to(message, "Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас 2 швидкісних генерацій та 5 повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
+      bot.reply_to(message, f"Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас {quick_genaratus} швидкісних генерацій та {genaratus} повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
     elif user_d not in all_users:
         # Запис ID користувача в файл
         with open("users.txt", "a") as f:
@@ -409,12 +379,59 @@ def send_welcome(message):
 
         # Додавання ID користувача до списку
         all_users.append(user_id)
-        bot.reply_to(message, "Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас 2 швидкісних генерацій та 5 повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
+        bot.reply_to(message, f"Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас {quick_genaratus} швидкісних генерацій та {genaratus} повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
     # Створення запису для нового користувача
     if user_id not in generations:
-        generations[user_id] = 5
-        quick_generations[user_id] = 2
+        generations[user_id] = genaratus
+        quick_generations[user_id] = quick_genaratus
+    return
+  idus = f"{message.chat.id}"
+  if idus == text:
+    bot.send_message(message.chat.id, "Це ваше реферальне посилання, ви не можете його активувати!")
+    all_users.append(user_id)
+    return
 
+  else:
+    if user_id in all_users:
+      bot.send_message(message.chat.id, "Ви вже є нашим рефералом, ви не можете перейти на іншого реферала!")
+      all_users.append(user_id)
+    else:
+      try: 
+        bot.send_message(text, "Користувач перейшов по вашому посиланню, ви отримуєте ***5*** швидких та ***10*** повільних генерацій.", parse_mode="Markdown")
+        typeint = int(text)
+        generations[typeint] = 10
+        quick_generations[typeint] = 5
+        bot.send_message(message.chat.id, "Ви успішно стали рефиралом стали рефералом, дякуємо вам.")
+        if user_id in all_users:
+          bot.reply_to(message, f"Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас {quick_genaratus} швидкісних генерацій та {genaratus} повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
+        elif user_d not in all_users:
+            # Запис ID користувача в файл
+            with open("users.txt", "a") as f:
+                f.write(f"{user_id}\n")
+
+            # Додавання ID користувача до списку
+            all_users.append(user_id)
+            bot.reply_to(message, f"Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас {quick_genaratus} швидкісних генерацій та {genaratus} повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
+        # Створення запису для нового користувача
+        if user_id not in generations:
+            generations[user_id] = genaratus
+            quick_generations[user_id] = quick_genaratus
+        
+      except:
+        if user_id in all_users:
+          bot.reply_to(message, f"Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас {quick_genaratus} швидкісних генерацій та {genaratus} повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
+        elif user_d not in all_users:
+            # Запис ID користувача в файл
+            with open("users.txt", "a") as f:
+                f.write(f"{user_id}\n")
+
+            # Додавання ID користувача до списку
+            all_users.append(user_id)
+            bot.reply_to(message, f"Вітаємо вас у RubiGen який може безкоштовно генерувати зображення.\nУ вас {quick_genaratus} швидкісних генерацій та {genaratus} повільних.\n\nПриєднайтеся будь ласка до нашого <a href=\"https://t.me/RubiGenChat\">чату</a> та <a href=\"https://t.me/RubiGenChanel\">каналу</a>.\nА потім введіть команду /help.", parse_mode="HTML")
+        # Створення запису для нового користувача
+        if user_id not in generations:
+            generations[user_id] = genaratus
+            quick_generations[user_id] = quick_genaratus
 
 
 
@@ -423,6 +440,51 @@ def send_welcome(message):
     # Додайте код для виконання дії після активації промокоду,
     # наприклад, надання знижки, доступу до контенту тощо.
 # Функція для обробки команди start
+
+
+
+
+
+
+dobre_id = 0
+kilkist_povilnogo_dobra_generatus = 0
+kilkist_shvidkogo_dobra_generatus = 0
+
+@bot.message_handler(commands=['free'])
+def nashe_dobro_povertaitsya(message):
+    global usertelegids
+    user_d = message.chat.id
+    if user_d == 6133407632:
+      bot.send_message(message.chat.id, "Введіть телеграм id користувача якому хочете надати генерації:")
+      bot.register_next_step_handler(message, add_id_dobro)
+
+
+def add_id_dobro(message):
+  global dobre_id
+  dobre_id = message.text
+  bot.send_message(message.chat.id, "Введіть скільки ШВИДКИХ генерацій ви хочете надати цьому користувачу:")
+  bot.register_next_step_handler(message, add_genaratus_dobro_1)
+
+
+def add_genaratus_dobro_1(message):
+  global kilkist_shvidkogo_dobra_generatus
+  kilkist_shvidkogo_dobra_generatus = message.text
+  bot.send_message(message.chat.id, "Введіть скільки ПОВІЛНИХ генерацій ви хочете надати цьому користувачу:")
+  bot.register_next_step_handler(message, add_genaratus_dobro)
+
+def add_genaratus_dobro(message):
+  kilkist_povilnogo_dobra_generatus = message.text
+  try:
+    inttype = int(dobre_id)
+    bot.send_message(dobre_id, f"🎉Вам нараховано ***{kilkist_shvidkogo_dobra_generatus}*** швидких та ***{kilkist_povilnogo_dobra_generatus}*** повільних генерацій🎉", parse_mode="Markdown")
+    bot.send_message(message.chat.id, f"Користувачу надано ***{kilkist_shvidkogo_dobra_generatus}*** швидких та ***{kilkist_povilnogo_dobra_generatus}*** повільних генерацій.", parse_mode="Markdown")
+    generations[inttype] = kilkist_povilnogo_dobra_generatus
+    quick_generations[inttype] = kilkist_shvidkogo_dobra_generatus
+  except:
+    inttype = int(dobre_id)
+    bot.send_message(message.chat.id, f"Користувача з таким id: `{inttype}`, немає або користувач НЕ запустив бота.", parse_mode="Markdown")
+
+
 
 
 
