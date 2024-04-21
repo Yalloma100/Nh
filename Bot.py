@@ -92,7 +92,7 @@ def bumon1 (message):
   # Перевірка залишку генерацій
    if user_id not in generations:
       generations[user_id] = genaratus
-
+   genenenenenenra = int(generations[user_id])
    if generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
       return
@@ -152,7 +152,7 @@ def bumon2 (message):
   # Перевірка залишку генерацій
   if user_id not in quick_generations:
     quick_generations[user_id] = quick_genaratus
-
+  genereteoese = int(quick_generations[user_id])
   if quick_generations[user_id] <= 0:
       bot.send_message(message.chat.id, "Ви вже використали всі генерації на день.")
       return
