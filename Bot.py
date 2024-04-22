@@ -474,16 +474,18 @@ def add_genaratus_dobro_1(message):
 
 def add_genaratus_dobro(message):
   kilkist_povilnogo_dobra_generatus = message.text
+  global kilkist_shvidkogo_dobra_generatus
   try:
     inttype = int(dobre_id)
     bot.send_message(dobre_id, f"🎉Вам нараховано ***{kilkist_shvidkogo_dobra_generatus}*** швидких та ***{kilkist_povilnogo_dobra_generatus}*** повільних генерацій🎉", parse_mode="Markdown")
     bot.send_message(message.chat.id, f"Користувачу надано ***{kilkist_shvidkogo_dobra_generatus}*** швидких та ***{kilkist_povilnogo_dobra_generatus}*** повільних генерацій.", parse_mode="Markdown")
+    kilkist_povilnogo_dobra_generatus = int(kilkist_povilnogo_dobra_generatus)
+    kilkist_shvidkogo_dobra_generatus = int(kilkist_shvidkogo_dobra_generatus)
     generations[inttype] = kilkist_povilnogo_dobra_generatus
     quick_generations[inttype] = kilkist_shvidkogo_dobra_generatus
   except:
     inttype = int(dobre_id)
     bot.send_message(message.chat.id, f"Користувача з таким id: `{inttype}`, немає або користувач НЕ запустив бота.", parse_mode="Markdown")
-
 
 
 
