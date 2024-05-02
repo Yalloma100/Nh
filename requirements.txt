@@ -2,3 +2,4 @@ pyTelegramBotAPI
 Flask
 gradio_client
 easygoogletranslate
+g4f
