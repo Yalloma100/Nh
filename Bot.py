@@ -74,8 +74,8 @@ def handle_buttons(message):
       if message.text == "Search and Replace":
           # Створення клавіатури для видалення
           keyboard_remove = types.ReplyKeyboardRemove()
-          bot.send_message(message.chat.id, "Надішліть фото для заміни об'єкту👇", reply_markup=keyboard_remove)
-          bot.register_next_step_handler(message, handle_search_and_replace)
+          bot.send_message(message.chat.id, "Вибачте але зараз ця функція не працює!", reply_markup=keyboard_remove)
+          return
       elif message.text == "Звичайна генерація":
         # Створення клавіатури для видалення
         keyboard_remove = types.ReplyKeyboardRemove()
