@@ -309,6 +309,7 @@ def bumon1 (message):
    resut = translator.translate(prompt, target_language='en')
    prompt = resut
    try:
+	  global generations
           global keycode
           global illo
           global numbon
