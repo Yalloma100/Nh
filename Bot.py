@@ -18,7 +18,12 @@ myid = [6133407632]
 numbon = 0
 illo = 0
 
-keycode = "sk-nCuCfKh4CsuxQE96kskX1CkAIkeP05j984k07hit3dsza3X8"
+
+keys = ["sk-81ff6kOFmvPBes8w4TlIOPN404jDlBlbkb2TxbebBPGVkk1z","sk-X4BPjI467OanwHO1snAUmxC73Vay0DrEQJXqVDcgoMvvkpmZ","sk-OXEHIC5WhhAhzDzpaFjDxD0j64V0nFA6ZX1yhvarS4Jblo2J","sk-4y5i5B53VRs9jV4gMc86X8vtUQu3LaIlhIii1GFJFFAvjzkE","sk-mDwdWJG4KEiMHZioSPJtqR36gkRAtaIBHYOfVgmtl3IqGGGJ","sk-GWLEuuG9bkwMetggsuxQvZWwgxDvBWWMsJYZF9pr2SVZ4iep","sk-9WBACQuRibyvYFTlKqEKBdglNd4Ti0dzbxy99u6SHvK4pdjW","sk-PYHffx0JIe2EM75GH2zax6mU5RYb3uz9bjCLdMa86Rbh1PiY","sk-gy3ufunqVTF6TVssRpYjUyop3N0phIBrreGBnt8oEANiW9Dt","sk-INTOAi19LNZ3lpLoIfudOuH5rrct3vsOuKaqExQDnW9H1VoZ","sk-FVlWPqufhMgRN3WzTZoCXKi4IybQrOrIv9YLqX8CMBCoT7lM","sk-WgdoQyjywKeNK1pRQf02FT7AdxqsJiYOGiq3cQn5WxwBvOX2","sk-QCVQ0PVYCbXwEsvGCDqxpjovpBNrHCX3aa8ZPpN2esKTYWue","sk-HLf4j5gLaFDbKRsCAhs0EZT1XZxzJcJJAXgWfoOZe0Byrk0B","sk-t9buh9V5u0lhaWyiugJBRltcEYJnjWZHh9129plouJBwOViQ","sk-nPQfH9RsXvylgwGPH1utUoDfmdJ3xuW7vf9G5n9q3x3VMnHk","sk-1a0qO9YN0EMoIHqS943Z5X2qooyIM3ztqtaFN1oVzQNJzJYX","sk-7wBFp3o5bkfvOXmQDDBo18iXDLtfFplVEplsFUsLvS3tKOe2","sk-9S3eJoU78CwPW74BBaSeJzmeZf9QOEHmCKLSGvXoOcV2u6KK","sk-8aEWXvsOeIUmTZXDO6vzKl6lllbQc6De2iAxPoQyw1M7BCLG","sk-3jEtVIxy83PZdYCcg4eYOVO3ide53A7KJQDYWpHSebW6YDnl","sk-PBhcupWfxvs6gEUZz77wKnpXmrJ7gXvAton47CqCh3GaiMwd","sk-sXIgnZh5TZoQ8U0QKTNNfboXL3Vq3zwtFgTCUFGC5CIq2rvI","sk-LivdKXpYUX24ig48kaY0ZL3RYa54TOlSpp7LQPWZxxn21OzS","sk-5AFzY3keaHV8RaauJbZGunlCdeLT295Z0subZNpz0o0fD0e3"]
+
+
+
+keycode = "sk-LA6f7UFO0HKQF05di24KNw54Dl5kjtUjvPyWS1gCUnt6MLfu"
 keycodeforreserch = "sk-tzfx5UFUCmcb6T9RFXmRMp6nKgcKE7IjAnSv22OWjszXQXKs"
 startuser = []
 addpromocodesss = ""
@@ -304,6 +309,16 @@ def bumon1 (message):
    resut = translator.translate(prompt, target_language='en')
    prompt = resut
    try:
+          global keycode
+          global illo
+          global numbon
+          illo+=1
+          if illo == 8:
+             numbon+=1
+             keycode = keys[numbon]
+             illo = 0
+             print("keycode:", keycode)
+		
 
           response = requests.post(
           f"https://api.stability.ai/v2beta/stable-image/generate/core",
