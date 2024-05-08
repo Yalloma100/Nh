@@ -314,10 +314,10 @@ def bumon1 (message):
           global numbon
           illo+=1
           if illo == 8:
-        	numbon+=1
-             	keycode = keys[numbon]
-             	illo = 0
-            	bot.send_message(6133407632, "oh yra!!!")
+              numbon+=1
+              keycode = keys[numbon]
+              illo = 0
+              bot.send_message(6133407632, "oh yra!!!")
 		
 	  return
           response = requests.post(
