@@ -8,7 +8,7 @@ from telebot.util import quick_markup
 from background import keep_alive
 from telebot import types
 
-BOT_TOKEN = "7195730246:AAEi5fLk_5a0eOF8_TWH0_mm1Xr65DlxITA"  # Замініть це своїм токеном бота
+BOT_TOKEN = "6754268225:AAFN5qOtXqjMemojBbY0pIHhzJWc1AH1fCI"  # Замініть це своїм токеном бота
 bot = telebot.TeleBot(BOT_TOKEN)
 
 genaratus = 5
