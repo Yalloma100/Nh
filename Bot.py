@@ -3,6 +3,7 @@ import os
 import requests
 import telebot
 import time
+import threading
 
 from telebot.util import quick_markup
 from background import keep_alive
@@ -795,10 +796,22 @@ def promter(message):
 
 
 keep_alive()
-    
+
+
+
+# Функция, которую вы хотите выполнить в другом потоке
+def my_dfggsdfgdsfgdfg():
+  while True:
+    print("None stope this functhion!")
+
+# Создание потока
+thread = threading.Thread(target=my_dfggsdfgdsfgdfg)
+
+# Запуск потока
+thread.start()
+
 while True:
   try:
-    print("None stop this app!")
     bot.polling(none_stop=True)
   except Exception as e:
     bot.send_message(6133407632, f"Помилка: {e}")
