@@ -795,9 +795,10 @@ def promter(message):
 
 
 keep_alive()
-
+    
 while True:
   try:
+    print("None stop this app!")
     bot.polling(none_stop=True)
   except Exception as e:
     bot.send_message(6133407632, f"Помилка: {e}")
