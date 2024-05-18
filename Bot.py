@@ -70,7 +70,6 @@ def generate_image(message):
   # Створення клавіатури з двома рядами
   keyboard = types.ReplyKeyboardMarkup(row_width=2)
   keyboard.add(button_1)
-  keyboard.add(button_2)
   keyboard.add(button_3)
   keyboard.add(button_4)
   keyboard.add(button_5)
@@ -370,34 +369,34 @@ def bumon1(message):
   resut = translator.translate(prompt, target_language='en')
   prompt = resut
   try:
-    global keycode
-    global illo
-    global numbon
-    illo += 1
-    if illo == 8:
-      numbon += 1
-      keycode = keys[numbon]
-      illo = 0
-      bot.send_message(6133407632, "- Мінус один ключ‼")
-    response = requests.post(
-        f"https://api.stability.ai/v2beta/stable-image/generate/core",
-        headers={
-            "authorization": keycode,
-            "accept": "image/*"
-        },
-        files={"none": ''},
-        data={
-            "prompt": prompt,
-            "output_format": "webp",
-        },
-    )
+    from gradio_client import Client
 
-    if response.status_code == 200:
-      with open("./lighthouse.webp", 'wb') as file:
-        file.write(response.content)
-    else:
-      raise Exception(str(response.json()))
-    url = open('./lighthouse.webp', 'rb')
+    client = Client("mexicanamerican/dalle-3-xl-lora-v2")
+    result = client.predict(
+		prompt,	# str in 'Prompt' Textbox component
+		"(deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, (NSFW:1.25)",	# str in 'Negative prompt' Textbox component
+		True,	# bool in 'Use negative prompt' Checkbox component
+		0,	# float (numeric value between 0 and 2147483647)
+								#in 'Seed' Slider component
+		1024,	# float (numeric value between 512 and 2048)
+								#in 'Width' Slider component
+		1024,	# float (numeric value between 512 and 2048)
+								#in 'Height' Slider component
+	  6.0,	# float (numeric value between 0.1 and 20.0)
+								#in 'Guidance Scale' Slider component
+		True,	# bool in 'Randomize seed' Checkbox component
+		api_name="/run"
+)
+    my_string= str(result)
+    start_marker = "/tmp/gradio/"
+    end_marker = ".png"
+    extracted_value = my_string.split(start_marker)[1].split(end_marker)[0]
+
+# Помещение значения в переменную
+    codemmm = extracted_value
+
+    url = "https://mexicanamerican-dalle-3-xl-lora-v2.hf.space/file=" + "/tmp/gradio/" + codemmm + ".png"
+
     # Видаліть останнє повідомлення, яке ваш бот відправив у чат користувача
     bot.send_photo(
         message.chat.id,
