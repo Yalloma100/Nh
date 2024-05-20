@@ -798,18 +798,31 @@ keep_alive()
 
 
 
-# Функция, которую вы хотите выполнить в другом потоке
-async def my_dfggsdfgdsfgdfg():
-  while True:
-    print("None stope this functhion!")
+import requests
+from bs4 import BeautifulSoup
+import hashlib
+import time
 
-# Создание потока
-thread = threading.Thread(target=my_dfggsdfgdsfgdfg)
+URL = 'https://xi8ft8hxwu2qedniq9bauh.streamlit.app/'  # Замените URL на адрес нужной веб-страницы
+current_hash = None
 
-# Запуск потока
-thread.start()
+async def fetch_content(url):
+   response = requests.get(url)
+   soup = BeautifulSoup(response.content, 'html.parser')
+   return soup.get_text()  # Получаем текст страницы для сравнения
 
-while True:
+async while True:
+   print("Проверка на изменения...")
+   content = fetch_content(URL)
+   new_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
+
+   if current_hash is None:
+      current_hash = new_hash
+      print("Мониторинг начат...")
+   elif new_hash != current_hash:
+      print("Обнаружены изменения!")
+      current_hash = new_hash
+async while True:
   try:
     bot.polling(none_stop=True)
   except Exception as e:
