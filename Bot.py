@@ -823,7 +823,7 @@ async def fetch_content(url):
       print("Обнаружены изменения!")
       current_hash = new_hash
 
-async fetch_content(url)
+fetch_content(url)
 while True:
   try:
     bot.polling(none_stop=True)
