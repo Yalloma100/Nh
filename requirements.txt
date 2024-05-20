@@ -3,3 +3,4 @@ Flask
 gradio_client
 easygoogletranslate
 g4f
+beautifulsoup4
