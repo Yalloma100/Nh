@@ -811,10 +811,10 @@ async def fetch_content(url):
    soup = BeautifulSoup(response.content, 'html.parser')
    return soup.get_text()  # Получаем текст страницы для сравнения
 
-async while True:
-   print("Проверка на изменения...")
-   content = fetch_content(URL)
-   new_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
+   while True:
+      print("Проверка на изменения...")
+      content = fetch_content(URL)
+      new_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
 
    if current_hash is None:
       current_hash = new_hash
@@ -822,7 +822,9 @@ async while True:
    elif new_hash != current_hash:
       print("Обнаружены изменения!")
       current_hash = new_hash
-async while True:
+
+async fetch_content(url)
+while True:
   try:
     bot.polling(none_stop=True)
   except Exception as e:
