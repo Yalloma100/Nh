@@ -798,32 +798,37 @@ keep_alive()
 
 
 
+import threading
 import requests
 from bs4 import BeautifulSoup
 import hashlib
 import time
 
-URL = 'https://xi8ft8hxwu2qedniq9bauh.streamlit.app/'  # Замените URL на адрес нужной веб-страницы
+URL = 'https://xi8ft8hxwu2qedniq9bauh.streamlit.app/'  # Замініть URL на адресу потрібної веб-сторінки
 current_hash = None
 
-async def fetch_content(url):
-   response = requests.get(url)
-   soup = BeautifulSoup(response.content, 'html.parser')
-   return soup.get_text()  # Получаем текст страницы для сравнения
+def fetch_content(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    return soup.get_text()  # Отримуємо текст сторінки для порівняння
 
-   while True:
-      print("Проверка на изменения...")
-      content = fetch_content(URL)
-      new_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
+def monitor_changes():
+    while True:
+        print("Перевірка на зміни...")
+        content = fetch_content(URL)
+        new_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
 
-   if current_hash is None:
-      current_hash = new_hash
-      print("Мониторинг начат...")
-   elif new_hash != current_hash:
-      print("Обнаружены изменения!")
-      current_hash = new_hash
+        if current_hash is None:
+            current_hash = new_hash
+            print("Моніторинг розпочато...")
+        elif new_hash != current_hash:
+            print("Виявлено зміни!")
+            current_hash = new_hash
 
-fetch_content(url)
+if __name__ == "__main__":
+    monitoring_thread = threading.Thread(target=monitor_changes)
+    monitoring_thread.start()
+
 while True:
   try:
     bot.polling(none_stop=True)
