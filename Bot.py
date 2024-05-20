@@ -57,7 +57,7 @@ generations = {}
 
 @bot.message_handler(commands=['gen'])
 # Функція для обробки команди генерації зображення
-def generate_image(message):
+async def generate_image(message):
   global genaratus
   user_id = message.from_user.id
   user_d = message.chat.id
@@ -99,7 +99,7 @@ def generate_image(message):
     "Search and Replace", "Звичайна генерація", "SDXL diffusion",
     "Stable Cascade", "SDXL-Lightning"
 ])
-def handle_buttons(message):
+async def handle_buttons(message):
   user_id = message.from_user.id
   user_d = message.chat.id
   if user_id in all_users:
@@ -148,7 +148,7 @@ def handle_buttons(message):
     handle_buttons(message)
 
 
-def sdxllightning(message):
+async def sdxllightning(message):
   prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
@@ -187,7 +187,7 @@ def sdxllightning(message):
     )
 
 
-def sdxldiffusion(message):
+async def sdxldiffusion(message):
   prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
@@ -225,7 +225,7 @@ def sdxldiffusion(message):
     )
 
 
-def stablecascade(message):
+async def stablecascade(message):
   prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
@@ -272,7 +272,7 @@ def stablecascade(message):
     )
 
 
-def handle_search_and_replace(message):
+async def handle_search_and_replace(message):
   try:
     # Отримуємо ID чату та ID фото
     photo_id = message.photo[-1].file_id
@@ -290,13 +290,13 @@ def handle_search_and_replace(message):
                      "Помилка при отриманні фото. Спробуйте ще раз.")
 
 
-def reg_promt_img(message):
+async def reg_promt_img(message):
   search_promp = message.text
   bot.send_message(message.chat.id, "Введіть на що ви хочете замінити👇")
   bot.register_next_step_handler(message, reg_promt_img2, search_promp)
 
 
-def reg_promt_img2(message, search_promp):
+async def reg_promt_img2(message, search_promp):
   user_id = message.from_user.id
   prompt = message.text
   if user_id not in generations:
@@ -352,7 +352,7 @@ def reg_promt_img2(message, search_promp):
     )
 
 
-def bumon1(message):
+async def bumon1(message):
   prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
@@ -414,7 +414,7 @@ def bumon1(message):
 # Зменшення кількості генерацій
 
 
-def help(message):
+async def help(message):
   bot.send_message(
       message.chat.id,
       "Я RubiGen, можу генерувати зображення по їх опису.\n\nПідпишіться на Канал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat - Там роздають промокоди на генерацію зображень.\n\nКоманди:\n/buy - ❤Купити Premium підписку на бота RubiGen❤\n/gen - Генерувати зображення.\n/help - Допомога та команди.\n/balance - Перевірити баланс.\n/promo - Ввести промокод.\n/promter - (BETA) Покращиити промт за допомогою PROmter.\n/ref - Отримати рефиральне посилання.\n\n*new:\n/gpt - Задати питання gpt.\n/qwen - Задати питання Qwen.\n/llama - Задати питання Llama 3.\n\nЗа питаннями та допомогою звертайтесь до адміна: @RubiGenSupport.\n"
@@ -422,7 +422,7 @@ def help(message):
 
 
 # Функція для обробки команди перевірки залишку генерацій
-def check_generations(message):
+async def check_generations(message):
   user_id = message.chat.id
   global generations
   # Перевірка наявності користувача
@@ -444,12 +444,12 @@ all_users = []
 
 
 @bot.message_handler(commands=['llama'])
-def llama_chat(message):
+async def llama_chat(message):
   bot.send_message(message.chat.id, "Введіть запит до Llama👇")
   bot.register_next_step_handler(message, gpt_send)
 
 
-def llama_send(message):
+async def llama_send(message):
   text_to_gpt = message.text
   bot.send_message(message.chat.id, "💬Відповідаю...")
   from gradio_client import Client
@@ -464,7 +464,7 @@ def llama_send(message):
 
 
 @bot.message_handler(commands=['send'])
-def send_m(message):
+async def send_m(message):
   if message.chat.id == 6133407632:
     bot.send_message(message.chat.id, "Введіть повідомлення для розсилки:")
     bot.register_next_step_handler(message, send_message_to_users)
@@ -472,14 +472,14 @@ def send_m(message):
     bot.send_message(message.chat.id, "Error: you not admin")
 
 
-def send_message_to_users(message):
+async def send_message_to_users(message):
   message_text = message.text
   for user_id in all_users:
     bot.send_message(user_id, message_text)
 
 
 @bot.message_handler(commands=['add'])
-def add_api_key(message):
+async def add_api_key(message):
   if message.chat.id == 6133407632:
     global keys
     bot.send_message(message.chat.id, "Введіть ключ:")
@@ -488,7 +488,7 @@ def add_api_key(message):
     return
 
 
-def add_key(message):
+async def add_key(message):
   global numbon
   global keys
   key = message.text
@@ -507,7 +507,7 @@ activated_promocodes = {}
 
 
 @bot.message_handler(commands=["promo"])
-def promo_handler(message: types.Message):
+async def promo_handler(message: types.Message):
   global genaratus
   user_id = message.chat.id
   if generations[user_id] > genaratus:
@@ -550,7 +550,7 @@ addpromocodesss = ""
 
 
 @bot.message_handler(commands=['addpromo'])
-def naigfd(message):
+async def naigfd(message):
   if message.chat.id == 6133407632:
     bot.send_message(message.chat.id, "Введіть новий промокод:")
     bot.register_next_step_handler(message, send_messall)
@@ -558,7 +558,7 @@ def naigfd(message):
     bot.send_message(message.chat.id, "Error: you not admin")
 
 
-def send_messall(message):
+async def send_messall(message):
   global addpromocodesss
   addpromocodesss = message.text
   bot.send_message(message.chat.id, "Промокод додано")
@@ -570,7 +570,7 @@ usertelegids = []
 
 
 @bot.message_handler(commands=['buy'])
-def add_buy_user(message):
+async def add_buy_user(message):
   global usertelegids
   user_d = message.chat.id
   if user_d == 6133407632:
@@ -584,7 +584,7 @@ def add_buy_user(message):
         parse_mode="Markdown")
 
 
-def next_add_buy(message):
+async def next_add_buy(message):
   global usertelegids
   global userbuyid
   userbuyid = message.text
@@ -608,7 +608,7 @@ def next_add_buy(message):
 
 
 @bot.message_handler(commands=["ref"])
-def send_refrence(message):
+async def send_refrence(message):
   bot.send_message(
       message.chat.id,
       f"🎁 Реферальна програма:\n\n💡 Твоїм рефералом вважається будь-який користувач, який уперше потрапив у систему через твоє посилання.\n\n🔗Ваше реферальне посилання: `https://t.me/imagenerabot?start={message.chat.id}`\n\nЗа кожну людину яка приєднається до нашого бота по вашому посиланю, ви отримаєте 10 генерацій.",
@@ -616,7 +616,7 @@ def send_refrence(message):
 
 
 @bot.message_handler(commands=["start"])
-def send_awesome(message):
+async def send_awesome(message):
   user_d = message.chat.id
   user_id = message.from_user.id
   try:
@@ -716,12 +716,12 @@ def send_awesome(message):
 
 
 @bot.message_handler(commands=['gpt'])
-def gpt(message):
+async def gpt(message):
   bot.send_message(message.chat.id, "Введіть запит до chat gpt👇")
   bot.register_next_step_handler(message, gpt_send)
 
 
-def gpt_send(message):
+async def gpt_send(message):
   text_to_gpt = message.text
   bot.send_message(message.chat.id, "💬Відповідаю...")
   from g4f.client import Client
@@ -739,12 +739,12 @@ def gpt_send(message):
 
 
 @bot.message_handler(commands=['qwen'])
-def qwen(message):
+async def qwen(message):
   bot.send_message(message.chat.id, "Введіть запит до Qwen👇")
   bot.register_next_step_handler(message, qwen_send)
 
 
-def qwen_send(message):
+async def qwen_send(message):
   text_to_qwen = message.text
   bot.send_message(message.chat.id, "💬Відповідаю...")
   from gradio_client import Client
@@ -758,7 +758,7 @@ def qwen_send(message):
 
 
 @bot.message_handler(commands=['promter'])
-def beta_promter(message):
+async def beta_promter(message):
   bot.send_message(
       message.chat.id,
       "‼Увага‼\nНаразі ***PROmter*** це ***BETA*** версія, іноді може давати неправильні результати!\n\nВведіть ваш промт будь якою мовою, а я спробую його покращити👇",
@@ -766,7 +766,7 @@ def beta_promter(message):
   bot.register_next_step_handler(message, promter)
 
 
-def promter(message):
+async def promter(message):
   chat_text = message.text
   bot.send_message(
       message.chat.id,
@@ -799,7 +799,7 @@ keep_alive()
 
 
 # Функция, которую вы хотите выполнить в другом потоке
-def my_dfggsdfgdsfgdfg():
+async def my_dfggsdfgdsfgdfg():
   while True:
     print("None stope this functhion!")
 
