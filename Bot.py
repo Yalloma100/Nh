@@ -57,7 +57,7 @@ generations = {}
 
 @bot.message_handler(commands=['gen'])
 # Функція для обробки команди генерації зображення
-async def generate_image(message):
+def generate_image(message):
   global genaratus
   user_id = message.from_user.id
   user_d = message.chat.id
@@ -99,7 +99,7 @@ async def generate_image(message):
     "Search and Replace", "Звичайна генерація", "SDXL diffusion",
     "Stable Cascade", "SDXL-Lightning"
 ])
-async def handle_buttons(message):
+def handle_buttons(message):
   user_id = message.from_user.id
   user_d = message.chat.id
   if user_id in all_users:
@@ -148,7 +148,7 @@ async def handle_buttons(message):
     handle_buttons(message)
 
 
-async def sdxllightning(message):
+def sdxllightning(message):
   prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
@@ -187,7 +187,7 @@ async def sdxllightning(message):
     )
 
 
-async def sdxldiffusion(message):
+def sdxldiffusion(message):
   prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
@@ -225,7 +225,7 @@ async def sdxldiffusion(message):
     )
 
 
-async def stablecascade(message):
+def stablecascade(message):
   prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
@@ -271,8 +271,7 @@ async def stablecascade(message):
         "Помилка генерації зображення, можливо ваш промт порушує наші правила, перевірте промт та спробуйте ще раз.\n\nЯкщо помилка повторилася, зверніться до адміна: @RubiGenSupport."
     )
 
-
-async def handle_search_and_replace(message):
+def handle_search_and_replace(message):
   try:
     # Отримуємо ID чату та ID фото
     photo_id = message.photo[-1].file_id
@@ -290,13 +289,13 @@ async def handle_search_and_replace(message):
                      "Помилка при отриманні фото. Спробуйте ще раз.")
 
 
-async def reg_promt_img(message):
+def reg_promt_img(message):
   search_promp = message.text
   bot.send_message(message.chat.id, "Введіть на що ви хочете замінити👇")
   bot.register_next_step_handler(message, reg_promt_img2, search_promp)
 
 
-async def reg_promt_img2(message, search_promp):
+def reg_promt_img2(message, search_promp):
   user_id = message.from_user.id
   prompt = message.text
   if user_id not in generations:
@@ -352,7 +351,7 @@ async def reg_promt_img2(message, search_promp):
     )
 
 
-async def bumon1(message):
+def bumon1(message):
   prompt = message.text
   user_id = message.from_user.id
   # Перевірка залишку генерацій
@@ -414,7 +413,7 @@ async def bumon1(message):
 # Зменшення кількості генерацій
 
 
-async def help(message):
+def help(message):
   bot.send_message(
       message.chat.id,
       "Я RubiGen, можу генерувати зображення по їх опису.\n\nПідпишіться на Канал RubiGen: @RubiGenChanel.\nЧат RubiGen: @RubiGenChat - Там роздають промокоди на генерацію зображень.\n\nКоманди:\n/buy - ❤Купити Premium підписку на бота RubiGen❤\n/gen - Генерувати зображення.\n/help - Допомога та команди.\n/balance - Перевірити баланс.\n/promo - Ввести промокод.\n/promter - (BETA) Покращиити промт за допомогою PROmter.\n/ref - Отримати рефиральне посилання.\n\n*new:\n/gpt - Задати питання gpt.\n/qwen - Задати питання Qwen.\n/llama - Задати питання Llama 3.\n\nЗа питаннями та допомогою звертайтесь до адміна: @RubiGenSupport.\n"
@@ -422,7 +421,7 @@ async def help(message):
 
 
 # Функція для обробки команди перевірки залишку генерацій
-async def check_generations(message):
+def check_generations(message):
   user_id = message.chat.id
   global generations
   # Перевірка наявності користувача
@@ -444,12 +443,12 @@ all_users = []
 
 
 @bot.message_handler(commands=['llama'])
-async def llama_chat(message):
+def llama_chat(message):
   bot.send_message(message.chat.id, "Введіть запит до Llama👇")
   bot.register_next_step_handler(message, gpt_send)
 
 
-async def llama_send(message):
+def llama_send(message):
   text_to_gpt = message.text
   bot.send_message(message.chat.id, "💬Відповідаю...")
   from gradio_client import Client
@@ -464,7 +463,7 @@ async def llama_send(message):
 
 
 @bot.message_handler(commands=['send'])
-async def send_m(message):
+def send_m(message):
   if message.chat.id == 6133407632:
     bot.send_message(message.chat.id, "Введіть повідомлення для розсилки:")
     bot.register_next_step_handler(message, send_message_to_users)
@@ -472,14 +471,14 @@ async def send_m(message):
     bot.send_message(message.chat.id, "Error: you not admin")
 
 
-async def send_message_to_users(message):
+def send_message_to_users(message):
   message_text = message.text
   for user_id in all_users:
     bot.send_message(user_id, message_text)
 
 
 @bot.message_handler(commands=['add'])
-async def add_api_key(message):
+def add_api_key(message):
   if message.chat.id == 6133407632:
     global keys
     bot.send_message(message.chat.id, "Введіть ключ:")
@@ -488,7 +487,7 @@ async def add_api_key(message):
     return
 
 
-async def add_key(message):
+def add_key(message):
   global numbon
   global keys
   key = message.text
@@ -507,7 +506,7 @@ activated_promocodes = {}
 
 
 @bot.message_handler(commands=["promo"])
-async def promo_handler(message: types.Message):
+def promo_handler(message: types.Message):
   global genaratus
   user_id = message.chat.id
   if generations[user_id] > genaratus:
@@ -550,7 +549,7 @@ addpromocodesss = ""
 
 
 @bot.message_handler(commands=['addpromo'])
-async def naigfd(message):
+def naigfd(message):
   if message.chat.id == 6133407632:
     bot.send_message(message.chat.id, "Введіть новий промокод:")
     bot.register_next_step_handler(message, send_messall)
@@ -558,7 +557,7 @@ async def naigfd(message):
     bot.send_message(message.chat.id, "Error: you not admin")
 
 
-async def send_messall(message):
+def send_messall(message):
   global addpromocodesss
   addpromocodesss = message.text
   bot.send_message(message.chat.id, "Промокод додано")
@@ -570,7 +569,7 @@ usertelegids = []
 
 
 @bot.message_handler(commands=['buy'])
-async def add_buy_user(message):
+def add_buy_user(message):
   global usertelegids
   user_d = message.chat.id
   if user_d == 6133407632:
@@ -584,7 +583,7 @@ async def add_buy_user(message):
         parse_mode="Markdown")
 
 
-async def next_add_buy(message):
+def next_add_buy(message):
   global usertelegids
   global userbuyid
   userbuyid = message.text
@@ -608,7 +607,7 @@ async def next_add_buy(message):
 
 
 @bot.message_handler(commands=["ref"])
-async def send_refrence(message):
+def send_refrence(message):
   bot.send_message(
       message.chat.id,
       f"🎁 Реферальна програма:\n\n💡 Твоїм рефералом вважається будь-який користувач, який уперше потрапив у систему через твоє посилання.\n\n🔗Ваше реферальне посилання: `https://t.me/imagenerabot?start={message.chat.id}`\n\nЗа кожну людину яка приєднається до нашого бота по вашому посиланю, ви отримаєте 10 генерацій.",
@@ -616,7 +615,7 @@ async def send_refrence(message):
 
 
 @bot.message_handler(commands=["start"])
-async def send_awesome(message):
+def send_awesome(message):
   user_d = message.chat.id
   user_id = message.from_user.id
   try:
@@ -716,12 +715,12 @@ async def send_awesome(message):
 
 
 @bot.message_handler(commands=['gpt'])
-async def gpt(message):
+def gpt(message):
   bot.send_message(message.chat.id, "Введіть запит до chat gpt👇")
   bot.register_next_step_handler(message, gpt_send)
 
 
-async def gpt_send(message):
+def gpt_send(message):
   text_to_gpt = message.text
   bot.send_message(message.chat.id, "💬Відповідаю...")
   from g4f.client import Client
@@ -739,12 +738,12 @@ async def gpt_send(message):
 
 
 @bot.message_handler(commands=['qwen'])
-async def qwen(message):
+def qwen(message):
   bot.send_message(message.chat.id, "Введіть запит до Qwen👇")
   bot.register_next_step_handler(message, qwen_send)
 
 
-async def qwen_send(message):
+def qwen_send(message):
   text_to_qwen = message.text
   bot.send_message(message.chat.id, "💬Відповідаю...")
   from gradio_client import Client
@@ -758,7 +757,7 @@ async def qwen_send(message):
 
 
 @bot.message_handler(commands=['promter'])
-async def beta_promter(message):
+def beta_promter(message):
   bot.send_message(
       message.chat.id,
       "‼Увага‼\nНаразі ***PROmter*** це ***BETA*** версія, іноді може давати неправильні результати!\n\nВведіть ваш промт будь якою мовою, а я спробую його покращити👇",
@@ -766,7 +765,7 @@ async def beta_promter(message):
   bot.register_next_step_handler(message, promter)
 
 
-async def promter(message):
+def promter(message):
   chat_text = message.text
   bot.send_message(
       message.chat.id,
@@ -798,7 +797,37 @@ keep_alive()
 
 
 
+import threading
+import requests
+from bs4 import BeautifulSoup
+import hashlib
+import time
 
+URL = 'https://xi8ft8hxwu2qedniq9bauh.streamlit.app/'  # Замініть URL на адресу потрібної веб-сторінки
+current_hash = None
+
+def fetch_content(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    return soup.get_text()  # Отримуємо текст сторінки для порівняння
+
+def monitor_changes():
+    while True:
+        print("Перевірка на зміни...")
+        content = fetch_content(URL)
+        new_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
+
+        if current_hash is None:
+            current_hash = new_hash
+            print("Моніторинг розпочато...")
+        elif new_hash != current_hash:
+            print("Виявлено зміни!")
+            current_hash = new_hash
+
+if __name__ == "__main__":
+    monitoring_thread = threading.Thread(target=monitor_changes)
+    monitoring_thread.start()
+    
 
 while True:
   try:
