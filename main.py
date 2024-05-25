@@ -1,5 +1,8 @@
 # main.py
 import streamlit as st
+# Ваш основний файл
+import os
+os.system('python file.py')
 
 def main():
     st.title("Мій перший додаток Streamlit")
