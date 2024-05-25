@@ -798,35 +798,13 @@ keep_alive()
 
 
 import threading
-import requests
-from bs4 import BeautifulSoup
-import hashlib
-import time
+import subprocess
 
-URL = 'https://xi8ft8hxwu2qedniq9bauh.streamlit.app/'  # Замініть URL на адресу потрібної веб-сторінки
-current_hash = None
-
-def fetch_content(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
-    return soup.get_text()  # Отримуємо текст сторінки для порівняння
-
-def monitor_changes():
-    while True:
-        print("Перевірка на зміни...")
-        content = fetch_content(URL)
-        new_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()
-
-        if current_hash is None:
-            current_hash = new_hash
-            print("Моніторинг розпочато...")
-        elif new_hash != current_hash:
-            print("Виявлено зміни!")
-            current_hash = new_hash
+def run_streamlit_app():
+    subprocess.run(["streamlit", "run", "main.py"])
 
 if __name__ == "__main__":
-    monitoring_thread = threading.Thread(target=monitor_changes)
-    monitoring_thread.start()
+    run_streamlit_app()
     
 
 while True:
