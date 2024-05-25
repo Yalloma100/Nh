@@ -370,32 +370,15 @@ def bumon1(message):
   try:
     from gradio_client import Client
 
-    client = Client("mexicanamerican/dalle-3-xl-lora-v2")
+    client = Client("VitOliv/sd-community-sdxl-flash_Teste_Aula")
     result = client.predict(
-		prompt,	# str in 'Prompt' Textbox component
-		"(deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, (NSFW:1.25)",	# str in 'Negative prompt' Textbox component
-		True,	# bool in 'Use negative prompt' Checkbox component
-		0,	# float (numeric value between 0 and 2147483647)
-								#in 'Seed' Slider component
-		1024,	# float (numeric value between 512 and 2048)
-								#in 'Width' Slider component
-		1024,	# float (numeric value between 512 and 2048)
-								#in 'Height' Slider component
-	  6.0,	# float (numeric value between 0.1 and 20.0)
-								#in 'Guidance Scale' Slider component
-		True,	# bool in 'Randomize seed' Checkbox component
-		api_name="/run"
+		param_0=prompt,
+		api_name="/predict"
 )
-    my_string= str(result)
-    start_marker = "/tmp/gradio/"
-    end_marker = ".png"
-    extracted_value = my_string.split(start_marker)[1].split(end_marker)[0]
-
+    url = "https://vitoliv-sd-community-sdxl-flash-teste-aula.hf.space/file=" + result
+    
 # Помещение значения в переменную
-    codemmm = extracted_value
-
-    url = "https://mexicanamerican-dalle-3-xl-lora-v2.hf.space/file=" + "/tmp/gradio/" + codemmm + ".png"
-
+    
     # Видаліть останнє повідомлення, яке ваш бот відправив у чат користувача
     bot.send_photo(
         message.chat.id,
