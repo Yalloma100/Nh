@@ -370,13 +370,19 @@ def bumon1(message):
   try:
     from gradio_client import Client
 
-    client = Client("VitOliv/sd-community-sdxl-flash_Teste_Aula")
+    client = Client("https://913f7051c61c070e4e.gradio.live/")
     result = client.predict(
-		param_0=prompt,
-		api_name="/predict"
+		prompt=prompt,
+		seed=0,
+		num_images=1,
+		fast_vae_decode=True,
+		api_name="/inference"
 )
-    url = "https://vitoliv-sd-community-sdxl-flash-teste-aula.hf.space/file=" + result
-    
+    my_string= str(result)
+    start_marker = "/tmp/gradio/"
+    end_marker = ".webp"
+    extracted_value = my_string.split(start_marker)[1].split(end_marker)[0]
+    url = "https://913f7051c61c070e4e.gradio.live/file="+start_marker+extracted_value+end_marker
 # Помещение значения в переменную
     
     # Видаліть останнє повідомлення, яке ваш бот відправив у чат користувача
